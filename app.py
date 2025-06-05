@@ -652,7 +652,6 @@ def settings_categories():
     #tax_rates_list = db_session.query(tax_rates_db).filter_by(user_id=session["user_id"]).all()
     return render_template("main/settings/categories.html",categories=categories_)#,tax_rates_list=tax_rates_list
 
-
 @app.route("/edit_category/<int:category_id>", methods=["POST"])
 @login_required
 def edit_category(category_id):
@@ -669,7 +668,6 @@ def edit_category(category_id):
         db_session.commit()
     return redirect(url_for("settings_categories"))
 
-
 @app.route("/delete_category/<int:category_id>", methods=["POST"])
 @login_required
 def delete_category(category_id):
@@ -679,7 +677,6 @@ def delete_category(category_id):
         db_session.commit()
         flash("Category deleted successfully!", "success")
     return redirect(url_for("settings_categories")) 
-
 
 @app.route('/settings/profile', methods=['GET', 'POST'])
 @login_required
@@ -695,7 +692,6 @@ def settings_profile():
         flash("Profile updated successfully!", "success")
 
     return render_template("main/settings/profile.html", user=user)
-
 
 @app.route('/settings/profile/delete', methods=['GET', 'POST'])
 @login_required
