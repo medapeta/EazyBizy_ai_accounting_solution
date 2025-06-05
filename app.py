@@ -80,7 +80,7 @@ def register():
         username = request.form.get("username")
         email = request.form.get("email")
         bussiness_name = request.form.get("bussiness_name")
-        password = request.form.get("password")
+        password = str(request.form.get("password"))
         confirm_password = request.form.get("confirm_password")
 
         # Validate inputs
@@ -100,6 +100,10 @@ def register():
             flash("Passwords do not match", "error")
             return redirect("/register")
 
+        # checking the validation of password length
+        if len(password) < 6:
+            flash("Password must be greater than 6 characters", "error")
+            return redirect("/register")
         # Check if username or business name or email already exists
         existing_user = db_session.query(users_db).filter(
             (users_db.username == username) | 
@@ -150,10 +154,11 @@ def dashboard():
 
 
     asset,liability,equity,total_bs = get_balance_sheet_data()
+    cash_on_hand = 0
     #cash_on_hand
     for acc in asset:
         if acc["account_x"].name == 'cash':
-            cash_on_hand = acc["account_total"]
+            cash_on_hand = acc["account_total"] if acc["account_total"] is not None else 0
     #net_worth/current capital
     net_worth = total_bs["equity"] 
 
