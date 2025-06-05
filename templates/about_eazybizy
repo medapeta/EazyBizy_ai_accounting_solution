@@ -1,0 +1,154 @@
+{% extends "layout.html" %}
+{% block title %}About EazyBizy{% endblock %}
+
+{% block content %}
+<style>
+  .about-eazybizy {
+    background: linear-gradient(135deg, #0f111b, #1a1f3a) !important;
+    border: 1px solid var(--medium-green) !important;
+  }
+  
+  .developer-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid var(--light-green);
+    box-shadow: 0 0 20px rgba(129, 199, 132, 0.5);
+    margin: 0 auto 1.5rem auto;
+  }
+  
+  .feature-item {
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--light-green) !important;
+  }
+  
+  .feature-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(46, 125, 50, 0.4) !important;
+  }
+  
+  .purpose-card {
+    background: rgba(27, 94, 32, 0.1) !important;
+    border: 1px dashed var(--light-green) !important;
+  }
+</style>
+
+<section class="about-eazybizy container my-5 p-4 p-md-5 rounded-3 shadow-lg">
+  <div class="text-center mb-5">
+    <h1 class="text-green mb-4">About EazyBizy</h1>
+    <p class="lead text-pale-green mx-auto" style="max-width: 800px;">
+      Your friendly financial companion that simplifies money management without the accounting jargon
+    </p>
+  </div>
+
+  <div class="developer mb-5 text-center">
+    <div class="d-flex flex-column align-items-center">
+    <h2 class="text-green mt-2">Meet the Creator</h2>
+  </div>
+      <div class="position-relative mb-4">
+      <img src="{{ url_for('static', filename='images/me.jpg') }}" 
+           class="developer-image img-fluid rounded-circle border border-4 border-light-green shadow-lg"
+           alt="Developer Photo">
+      <span class="position-absolute bottom-0 end-0 bg-light-green text-dark rounded-circle p-2 shadow">
+        👨‍💻
+      </span>
+    </div>
+    </div>
+
+
+    <div class="card card-custom mt-3 mx-auto" style="max-width: 800px;">
+      <div class="card-body">
+        <p class="card-text text-pale-green">
+          "Hi there! I'm <strong>Medhanie Petros</strong>, a developer on the go with a passion for making financial tools accessible to everyone. 
+          I created EazyBizy after struggling to find simple yet powerful money management software that didn't require 
+          an accounting degree to use."
+        </p>
+        <p class="card-text text-pale-green mt-3">
+          "As a CS50 student, I wanted to build something that would help real people with real financial challenges.
+          EazyBizy combines my love for clean design with practical AI tools to give you clarity about your money. This may not all be true but with further improvements it can reach its inteded hights"
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="features-overview mb-5">
+    <h2 class="text-center mb-4 text-green"> Why EazyBizy Works For You</h2>
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="card card-custom feature-item h-100">
+          <div class="card-body">
+            <h5 class="card-title"> Transaction Tracking Made Simple</h5>
+            <p class="card-text text-pale-green">
+              No more spreadsheets! Log purchases in seconds with our 
+              intuitive interface or use the help of ai in recording transactions if you have limited accounting knowledge.
+            </p>
+          </div>
+        </div>
+      </div>
+    <div class="col-md-6 col-lg-5">
+        <div class="card card-custom feature-item h-100">
+          <div class="card-body">
+            <h5 class="card-title"> Reports Generation</h5>
+            <p class="card-text text-pale-green">
+              You can generate pdf reports of your financial Statements that you can show your stakeholders.
+            </p>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="col-md-6 col-lg-5">
+        <div class="card card-custom feature-item h-100">
+          <div class="card-body">
+            <h5 class="card-title"> Clear Financial Pictures</h5>
+            <p class="card-text text-pale-green">
+              Beautiful charts and plain-English summaries help you understand where your money goes each month, 
+              without confusing financial terms.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-5">
+        <div class="card card-custom feature-item h-100">
+          <div class="card-body">
+            <h5 class="card-title"> Intelligent analysis About Your Money</h5>
+            <p class="card-text text-pale-green">
+              Request ai analysis for free and get answers in simple language, 
+              not spreadsheet cells.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="project-purpose text-center mt-5">
+    <div class="card card-custom purpose-card mx-auto" style="max-width: 800px;">
+      <div class="card-body">
+        <h2 class="text-green mb-4">🎓 The CS50 Journey</h2>
+        <p class="text-pale-green">
+          EazyBizy began as my CS50 final project - a challenge to build something meaningful with the skills I'd learned. 
+          What started as a basic transaction tracker it may grow into a full-fledged financial assistant. the journey was full of:
+        </p>
+        <ul class="text-start text-pale-green mx-auto" style="max-width: 600px;">
+          <li>Countless hours debugging Flask routes</li>
+          <li>Tweking and refering books, blogs and ai models on how to implement everything</li>
+          <li>Learning JS for everything</li>
+          <li>Implementing ai api for the app integration</li>
+          <li>Learning how to make charts actually useful (not just pretty)</li>
+          <li>And so so more ....</li>
+        </ul>
+        <p class="text-pale-green mt-3">
+          This project represents my journey from beginner to comfortable developer, and I'm excited to keep improving 
+          EazyBizy based on real user feedback.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-5">
+    <a href="/register" class="btn btn-primary btn-lg px-4 me-3">Navigate app</a>
+    <a href="/" class="btn btn-outline-secondary btn-lg px-4">Back to Home</a>
+  </div>
+</section>
+{% endblock %}

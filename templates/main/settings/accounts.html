@@ -1,0 +1,161 @@
+{% extends "/main/dash_layout.html" %}
+
+{% block content %}
+<main class="container py-5">
+
+  <!-- Heading -->
+  <h2 class="text-center mb-5 fw-bold text-light">📘 Chart of Accounts</h2>
+
+  <!-- Add New Account Card -->
+  <div class="card shadow rounded-4 mb-5 border-0 bg-dark text-light">
+    <div class="card-header text-white rounded-top-4" style="background-color: #2d4739;">
+      <h5 class="mb-0">➕ Add New Account</h5>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="/settings/accounts">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <label for="name" class="form-label">📛 Account Name</label>
+            <input type="text" class="form-control bg-dark text-light border-secondary" id="name" name="name" placeholder="e.g. Cash on Hand" required>
+          </div>
+
+          <div class="col-md-6">
+            <label for="type" class="form-label">📂 Account Type</label>
+            <select class="form-select bg-dark text-light border-secondary" id="type" name="type" required>
+              <option value="">Select type</option>
+              <option>Asset</option>
+              <option>Liability</option>
+              <option>Equity</option>
+              <option>Revenue</option>
+              <option>Expense</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label for="code" class="form-label">🔢 Account Code (optional)</label>
+            <input type="text" class="form-control bg-dark text-light border-secondary" id="code" name="code" placeholder="e.g. 1010">
+          </div>
+
+          <div class="col-md-6">
+            <label for="opening_balance" class="form-label">💰 Opening Balance</label>
+            <input type="number" class="form-control bg-dark text-light border-secondary" id="opening_balance" name="opening_balance" step="0.01" placeholder="0.00">
+          </div>
+
+          <div class="col-12">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="is_system_account" name="is_system_account">
+              <label class="form-check-label" for="is_system_account">
+                🔒 Is System Account?
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-grid mt-4">
+          <button type="submit" class="btn btn-success btn-lg rounded-pill">
+            💾 Save Account
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Accounts Table -->
+  <div class="table-responsive">
+    <table class="table table-dark table-hover align-middle shadow-sm rounded overflow-hidden">
+      <thead class="text-light text-center bg-secondary">
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Code</th>
+          <th>Opening Balance</th>
+          <th>System?</th>
+          <th>Created At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+        {% for acc in accounts %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td class="text-start text-light">{{ acc.name }}</td>
+          <td><span class="badge bg-secondary">{{ acc.type }}</span></td>
+          <td>{{ acc.code or '—' }}</td>
+          <td class="text-end">{{ '{:,.2f}'.format(acc.opening_balance or 0) }}</td>
+          <td>
+            {% if acc.is_system_account %}
+              <span class="badge bg-success">Yes</span>
+            {% else %}
+              <span class="badge border text-light">No</span>
+            {% endif %}
+          </td>
+          <td>{{ acc.created_at.strftime('%Y-%m-%d') }}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-warning rounded-pill" data-bs-toggle="modal" data-bs-target="#editModal{{ acc.id }}">
+              ✏️ Edit
+            </button>
+            <form method="POST" action="/delete_account/{{ acc.id }}" class="d-inline">
+              <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill ms-1"
+                onclick="return confirm('Are you sure you want to delete this account?')">
+                🗑️
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="8" class="text-muted text-center py-3">🚫 No accounts added yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Edit Account Modals -->
+  {% for acc in accounts %}
+  <div class="modal fade" id="editModal{{ acc.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ acc.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark text-light rounded-3">
+        <div class="modal-header" style="background-color: #2d4739;">
+          <h5 class="modal-title text-white" id="editModalLabel{{ acc.id }}">✏️ Edit Account</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method="POST" action="/edit_account/{{ acc.id }}">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Account Name</label>
+              <input type="text" class="form-control bg-dark text-light border-secondary" name="name" value="{{ acc.name }}" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Type</label>
+              <select class="form-select bg-dark text-light border-secondary" name="type" required>
+                {% for t in ['Asset', 'Liability', 'Equity', 'Revenue', 'Expense'] %}
+                <option value="{{ t }}" {% if acc.type == t %}selected{% endif %}>{{ t }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Code</label>
+              <input type="text" class="form-control bg-dark text-light border-secondary" name="code" value="{{ acc.code or '' }}">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Opening Balance</label>
+              <input type="number" class="form-control bg-dark text-light border-secondary" name="opening_balance" step="0.01" value="{{ acc.opening_balance }}">
+            </div>
+            <div class="form-check mb-3">
+              <input type="checkbox" class="form-check-input" name="is_system_account" id="sys{{ acc.id }}" {% if acc.is_system_account %}checked{% endif %}>
+              <label class="form-check-label" for="sys{{ acc.id }}">System Account?</label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">💾 Save Changes</button>
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</main>
+{% endblock %}

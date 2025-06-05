@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profit and Loss Statement</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 2rem;
+    }
+
+    .brand {
+      background-color: #1f1f1f;
+      border: 1px solid #333;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      color: #269dd8;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: center;
+      padding: 0.75rem;
+    }
+
+    .brand i {
+      font-size: 1.5rem;
+      color: #64b5f6;
+    }
+
+    h1 {
+      text-align: center;
+      color: #64b5f6;
+      margin-bottom: 2.5rem;
+      border-bottom: 2px solid #64b5f6;
+      padding-bottom: 0.5rem;
+    }
+
+    .section-title {
+      color: #81d4fa;
+      font-size: 1.25rem;
+      margin-top: 2.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      border-left: 4px solid #81d4fa;
+      padding-left: 0.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-bottom: 1.5rem;
+      background-color: #1e1e1e;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: right;
+      border-bottom: 1px solid #333;
+    }
+
+    th {
+      background-color: #263238;
+      color: #90caf9;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    td:first-child {
+      text-align: left;
+      color: #bbdefb;
+    }
+
+    tr:hover {
+      background-color: #1a1a1a;
+    }
+
+    tfoot td {
+      font-weight: bold;
+      background-color: #1c1c1c;
+      border-top: 2px solid #64b5f6;
+    }
+
+    .totals-row {
+      font-weight: bold;
+      border-top: 2px solid;
+    }
+
+    .total-income {
+      border-color: #34d399;
+      color: #34d399;
+    }
+
+    .total-expense {
+      border-color: #f87171;
+      color: #f87171;
+    }
+
+    .net-profit {
+      font-weight: bold;
+      font-size: 1.4rem;
+      text-align: right;
+      margin-top: 2rem;
+      padding: 1rem;
+      border: 2px dashed #64b5f6;
+      border-radius: 8px;
+      background-color: #1c1c1c;
+      color: #90caf9;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="brand">
+    <i>⚡</i> Powered by EazyBizy
+  </div>
+
+  <h1>Profit and Loss Statement</h1>
+
+  <div class="section-title">Income</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Account</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for acc in income %}
+      <tr>
+        <td>{{ acc.account_x.name }}</td>
+        <td>{{ "{:,.2f}".format(acc.account_total) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr class="totals-row total-income">
+        <td>Total Income</td>
+        <td>{{ "{:,.2f}".format(total_ie.incomes) }}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="section-title">Expenses</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Account</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for acc in expense %}
+      <tr>
+        <td>{{ acc.account_x.name }}</td>
+        <td>{{ "{:,.2f}".format(acc.account_total) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr class="totals-row total-expense">
+        <td>Total Expenses</td>
+        <td>{{ "{:,.2f}".format(total_ie.expenses) }}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="net-profit">
+    Net Profit / Loss: {{ "{:,.2f}".format(total_ie.net) }}
+  </div>
+
+</body>
+</html>

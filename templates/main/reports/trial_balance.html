@@ -1,0 +1,60 @@
+{% extends "/main/dash_layout.html" %}
+
+{% block content %}
+<main class="container py-5" style="flex: 1;">
+  <div class="card border-0 rounded-4 shadow" style="background-color: #1e1e1e;">
+    <div class="card-body p-4">
+      
+      <h2 class="text-center text-light fw-bold mb-4">🧾 Trial Balance Summary</h2>
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="text-secondary mb-0">🧮 Account Balances</h5>
+        <span class="badge bg-dark text-light shadow-sm px-3 py-2 fs-6 rounded-pill">
+          As of: <!-- {{ date }} -->
+        </span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle rounded-3 overflow-hidden">
+          <thead class="text-secondary">
+            <tr>
+              <th>📋 Account Name</th>
+              <th>📘 Type</th>
+              <th>📌 Code</th>
+              <th class="text-end text-success">⬆️ Debit</th>
+              <th class="text-end text-danger">⬇️ Credit</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for acct in accountz %}
+            <tr>
+              <td class="text-light">{{ acct["account_x"].name }}</td>
+              <td class="text-light">{{ acct["account_x"].type }}</td>
+              <td class="text-light">{{ acct["account_x"].code }}</td>
+              <td class="text-end text-success">
+                {% if acct["account_x"].normal_side == 'debit' %}
+                {{ "{:,.2f}".format(acct["account_total"]) }}
+                {% else %}—{% endif %}
+              </td>
+              <td class="text-end text-danger">
+                {% if acct["account_x"].normal_side == 'credit' %}
+                {{ "{:,.2f}".format(acct["account_total"]) }}
+                {% else %}—{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+
+            <!-- Totals -->
+            <tr class="fw-bold border-top text-light">
+              <td colspan="3" class="text-end">🧮 Total</td>
+              <td class="text-end text-success">{{ "{:,.2f}".format(total_dc["debits"]) }}</td>
+              <td class="text-end text-danger">{{ "{:,.2f}".format(total_dc["credits"]) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</main>
+{% endblock %}

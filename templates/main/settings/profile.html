@@ -1,0 +1,85 @@
+{% extends "/main/dash_layout.html" %}
+
+{% block content %}
+<main class="container py-4">
+  <div class="card rounded-4 shadow border-0" style="background-color: #1e1e1e;">
+    <div class="card-body p-4">
+
+      <h2 class="text-center text-primary fw-bold mb-4">🏢 Business Profile</h2>
+
+      <!-- Profile Display Card -->
+      <div class="card rounded-4 shadow border-0 mb-5" style="background-color: #1e1e1e;">
+        <div class="card-header rounded-top-4 px-4 py-3" style="background-color: #2d4739;">
+          <h5 class="mb-0 text-white">👤 Current Information</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="list-group list-group-flush rounded-bottom-4">
+            <div class="list-group-item d-flex justify-content-between align-items-center p-3" style="background-color: #232323; border-color: #343a40;">
+              <strong class="text-light">Accountant:</strong> 
+              <span class="text-light">{{ user.username }}</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center p-3" style="background-color: #232323; border-color: #343a40;">
+              <strong class="text-light">Business:</strong> 
+              <span class="text-light">{{ user.business_name }}</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center p-3" style="background-color: #232323; border-color: #343a40;">
+              <strong class="text-light">Currency:</strong> 
+              <span class="text-light">{{ user.currency }}</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center p-3" style="background-color: #232323; border-color: #343a40;">
+              <strong class="text-light">Fiscal Year:</strong>
+              <span class="text-light">{{ user.fiscal_year_start.strftime('%Y-%m-%d') if user.fiscal_year_start else 'Not set' }}</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center p-3" style="background-color: #232323; border-color: #343a40;">
+              <strong class="text-light">Created:</strong> 
+              <span class="text-light">{{ user.created_at.strftime('%Y-%m-%d') }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Form -->
+      <div class="card rounded-4 shadow border-0 mb-5" style="background-color: #1e1e1e;">
+        <div class="card-header rounded-top-4 px-4 py-3" style="background-color: #2d4739;">
+          <h5 class="mb-0 text-white">✏️ Edit Profile</h5>
+        </div>
+        <div class="card-body">
+          <form method="POST" enctype="multipart/form-data" action="/settings/profile">
+            <div class="mb-4">
+              <label class="form-label text-light">Accountant Name</label>
+              <input type="text" name="username" class="form-control rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" value="{{ user.username }}" required>
+            </div>
+            <div class="mb-4">
+              <label class="form-label text-light">Business Name</label>
+              <input type="text" name="business_name" class="form-control rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" value="{{ user.business_name }}" required>
+            </div>
+            <div class="mb-4">
+              <label class="form-label text-light">Currency</label>
+              <input type="text" name="currency" class="form-control rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" value="{{ user.currency }}" required>
+            </div>
+            <div class="mb-4">
+              <label class="form-label text-light">Fiscal Year Start</label>
+              <input type="date" name="fiscal_year_start" class="form-control rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" value="{{ user.fiscal_year_start.strftime('%Y-%m-%d') if user.fiscal_year_start else '' }}">
+            </div>
+            <div class="d-grid">
+              <button class="btn btn-success rounded-pill py-2 fw-bold" type="submit">
+                💾 Update Profile
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Delete Profile -->
+      <div class="text-end">
+        <form method="POST" action="{{ url_for('delete_profile') }}" onsubmit="return confirm('Are you sure you want to delete your profile? This action cannot be undone.')">
+          <button class="btn btn-outline-danger rounded-pill px-4">
+            🗑️ Delete Profile
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</main>
+{% endblock %}

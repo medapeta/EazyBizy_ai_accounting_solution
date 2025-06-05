@@ -1,0 +1,142 @@
+{% extends "/main/dash_layout.html" %}
+
+{% block content %}
+<main class="container py-4">
+ <div class="card rounded-4 shadow border-0" style="background-color: #1e1e1e;">
+  <!-- Title Section -->
+  <div class="card-body p-4">
+    <h2 class="text-center text-primary fw-bold mb-4"> Profit & Loss Statement</h2>
+    <p class="text-center text-secondary fw-bold mb-4 fst-italic">🗓️ <strong>Period:</strong> January 1, 2025 – March 31, 2025</p>
+    
+    <!-- Action Buttons (centered) -->
+    <div class="text-center">
+      <a href="/reports/pdf/profit_loss" target="_blank" class="btn btn-primary me-2">
+        📄 Print P&L PDF
+      </a>
+    </div>
+  <
+
+  <!-- AI Card (matches Balance Sheet style) -->
+  <div class="container">
+    <div class="card bg-dark text-light border-success rounded-4 shadow-lg">
+      <div class="card-header bg-success bg-opacity-25 border-success d-flex justify-content-center align-items-center" 
+           data-bs-toggle="collapse" data-bs-target="#aiHelpSection" style="cursor: pointer;">
+        <form id="aiForm" action="/reports/profit_loss/ai_analysis" method="post" class="m-0">
+          <input type="hidden" name="transaction_input" value="">
+          <button class="btn btn-success" data-bs-toggle="collapse" data-bs-target="#aiHelpSection">
+            <i class="bi bi-robot me-1"></i> Run AI Analysis
+          </button>
+        </form>
+      </div>
+      
+      <div class="collapse" id="aiHelpSection">
+        <div class="card-body">
+          <div id="aiResponse" class="mt-4 p-4 rounded-4 border border-success bg-dark bg-opacity-75 text-light shadow-lg glass-effect d-none">
+            <div class="d-flex align-items-center mb-3">
+              <i class="bi bi-stars text-warning fs-4 me-3 glow-icon"></i>
+              <h5 class="mb-0 text-success">EazyBizy AI Analysis</h5>
+            </div>
+            <div class="ps-3 text-light-emphasis fw-medium" id="aiOutput" style="font-size: 1.05rem;color:white !important">
+              {{ ai_response | safe }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Income Section -->
+    <h4 class="text-success mb-3">💰 Income</h4>
+    <div class="card shadow-sm border-success mb-4" style="background-color: #2a2a2a;">
+      <div class="card-body p-0">
+        <table class="table table-dark table-hover align-middle mb-0">
+          <thead>
+            <tr class="text-secondary">
+              <th>📂 Account</th>
+              <th class="text-end">💵 Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for incm in income %}
+            <tr>
+              <td class="text-light">{{ incm["account_x"].name }}</td>
+              <td class="text-end text-success">{{ "{:,.2f}".format(incm["account_total"]) }}</td>
+            </tr>
+            {% endfor %}
+            <tr class="fw-bold bg-success text-white">
+              <td>Total Income</td>
+              <td class="text-end">${{ "{:,.2f}".format(total_ie["incomes"]) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Expenses Section -->
+    <h4 class="text-danger mt-5 mb-3">💸 Expenses</h4>
+    <div class="card shadow-sm border-danger mb-4" style="background-color: #2a2a2a;">
+      <div class="card-body p-0">
+        <table class="table table-dark table-hover align-middle mb-0">
+          <thead>
+            <tr class="text-secondary">
+              <th>📂 Account</th>
+              <th class="text-end">💵 Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for exp in expense %}
+            <tr>
+              <td class="text-light">{{ exp["account_x"].name }}</td>
+              <td class="text-end text-danger">{{ "{:,.2f}".format(exp["account_total"]) }}</td>
+            </tr>
+            {% endfor %}
+            <tr class="fw-bold bg-danger text-white">
+              <td>Total Expenses</td>
+              <td class="text-end">${{ "{:,.2f}".format(total_ie["expenses"]) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Net Profit or Loss -->
+    {% if total_ie["net"] > 0 %}
+      <div class="alert alert-success d-flex justify-content-between align-items-center fs-5 fw-semibold rounded shadow-sm">
+        🟢 Net Profit: 
+        <span>${{ "{:,.2f}".format(total_ie["net"]) }}</span>
+      </div>
+    {% elif total_ie["net"] == 0 %}
+      <div class="alert alert-warning d-flex justify-content-between align-items-center fs-5 fw-semibold rounded shadow-sm">
+        ⚖️ Break Even: 
+        <span>${{ "{:,.2f}".format(total_ie["net"]) }}</span>
+      </div>
+    {% else %}
+      <div class="alert alert-danger d-flex justify-content-between align-items-center fs-5 fw-semibold rounded shadow-sm">
+        🔴 Net Loss: 
+        <span>${{ "{:,.2f}".format(total_ie["net"]) }}</span>
+      </div>
+    {% endif %}
+  </div>
+</main>
+
+<script>
+  // Keep your existing JS logic unchanged
+  document.getElementById("aiForm")?.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const output = document.getElementById("aiOutput");
+    const responseBox = document.getElementById("aiResponse");
+
+    try {
+      const res = await fetch("/reports/profit_loss/ai_analysis", {
+        method: "POST"
+      });
+      const data = await res.json();
+      output.innerHTML = data.ai_response;
+      responseBox.classList.remove("d-none");
+    } catch (err) {
+      output.textContent = "Failed to get AI suggestion.";
+      responseBox.classList.remove("d-none");
+    }
+  });
+</script>
+{% endblock %}

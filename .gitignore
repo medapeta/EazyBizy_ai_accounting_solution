@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+env/
+ENV/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Flask secret keys
+secrets.py
+config.py
+
+# SQLite databases
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+# Session files
+flask_session/

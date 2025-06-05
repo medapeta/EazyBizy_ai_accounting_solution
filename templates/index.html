@@ -1,0 +1,211 @@
+{% extends "layout.html" %}
+{% block title %}EazyBizy{% endblock %}
+
+{% block content %}
+<style>
+  /* Page-specific enhancements */
+  .hero {
+    padding: 6rem 1rem 8rem;
+    border-radius: 2rem;
+    color: #e0e7ff;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(129, 199, 132, 0.2), transparent 70%);
+    animation: pulseGlow 8s ease-in-out infinite;
+    border-radius: 50%;
+    z-index: 0;
+  }
+
+  .feature-card, .step-card, .chart-card, .blockquote {
+    transition: all 0.3s ease;
+  }
+
+  .feature-card:hover, .step-card:hover, .chart-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(46, 125, 50, 0.3) !important;
+  }
+
+  .blockquote {
+    border-left: 5px solid var(--light-green) !important;
+  }
+
+  .blockquote:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(46, 125, 50, 0.3) !important;
+  }
+
+  .step-icon {
+    font-size: 2.5rem;
+    background: linear-gradient(145deg, #1b5e20, #2e7d32);
+    color: white;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem auto;
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(46, 125, 50, 0.5);
+  }
+
+  .ai-glow-background, .glow-accent {
+    background: radial-gradient(circle, rgba(129,199,132,0.1), transparent);
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.2); opacity: 0.6; }
+  }
+
+  .fade-in {
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+  }
+
+  .delay-1 { animation-delay: 0.5s; }
+  .delay-2 { animation-delay: 1s; }
+
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+</style>
+
+<section class="hero hero-base">
+  <div class="container hero-content text-center">
+    <h1 class="fade-in display-4 fw-bold">Take Control of Your Finances with Ease</h1>
+    <p class="fade-in delay-1 lead text-pale-green">
+      Log your transactions, gain AI-powered insights, and visualize your money with clarity.
+    </p>
+    <div class="buttons fade-in delay-2 d-flex justify-content-center gap-3 mt-4">
+      <a href="/register" class="btn btn-primary btn-lg px-4">Get Started Free</a>
+      <a href="/login" class="btn btn-outline-secondary btn-lg px-4">Log In</a>
+    </div>
+  </div>
+</section>
+
+<section class="container my-5 py-5">
+  <h2 class="text-center mb-5 text-green">🚀 Key Features</h2>
+  <div class="row g-4 justify-content-center">
+    <div class="col-sm-10 col-md-6 col-lg-3">
+      <div class="card card-custom feature-card h-100 p-4 text-center">
+        <h5 class="mb-3">🧾 Transaction Logging</h5>
+        <p class="text-pale-green">Enter manually or upload CSVs — built for accuracy and ease.</p>
+      </div>
+    </div>
+    <div class="col-sm-10 col-md-6 col-lg-3">
+      <div class="card card-custom feature-card h-100 p-4 text-center">
+        <h5 class="mb-3">🤖 AI Categorization</h5>
+        <p class="text-pale-green">Smart sorting of expenses that saves you hours of manual work.</p>
+      </div>
+    </div>
+    <div class="col-sm-10 col-md-6 col-lg-3">
+      <div class="card card-custom feature-card h-100 p-4 text-center">
+        <h5 class="mb-3">📊 Financial Reports</h5>
+        <p class="text-pale-green">View Income Statements, Balance Sheets, and other key metrics.</p>
+      </div>
+    </div>
+    <div class="col-sm-10 col-md-6 col-lg-3">
+      <div class="card card-custom feature-card h-100 p-4 text-center">
+        <h5 class="mb-3">💬 Natural Language Insights</h5>
+        <p class="text-pale-green">Understand your numbers with plain-English AI summaries.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container my-5 py-5">
+  <h2 class="text-center mb-5 text-green">📋 How It Works in 4 Simple Steps</h2>
+  <div class="row g-4 justify-content-center">
+    <div class="col-sm-10 col-md-6 col-lg-3 mb-4">
+      <div class="card card-custom step-card h-100 p-4 text-center">
+        <div class="step-icon">🛠️</div>
+        <h5 class="mt-3">Chart of Accounts</h5>
+        <p class="text-pale-green">Create your own custom accounts to track income and expenses.</p>
+      </div>
+    </div>
+    <div class="col-sm-10 col-md-6 col-lg-3 mb-4">
+      <div class="card card-custom step-card h-100 p-4 text-center">
+        <div class="step-icon">📥</div>
+        <h5 class="mt-3">Add Transactions</h5>
+        <p class="text-pale-green">Log manually or upload CSVs — fast and flexible input.</p>
+      </div>
+    </div>
+    <div class="col-sm-10 col-md-6 col-lg-3 mb-4">
+      <div class="card card-custom step-card h-100 p-4 text-center">
+        <div class="step-icon">🤖</div>
+        <h5 class="mt-3">AI Categorization</h5>
+        <p class="text-pale-green">Let our AI do the heavy lifting to sort your data instantly.</p>
+      </div>
+    </div>
+    <div class="col-sm-10 col-md-6 col-lg-3 mb-4">
+      <div class="card card-custom step-card h-100 p-4 text-center">
+        <div class="step-icon">📊</div>
+        <h5 class="mt-3">View Insights</h5>
+        <p class="text-pale-green">Get clear reports and smart summaries of your finances.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container my-5 py-5 position-relative text-center">
+  <div class="ai-glow-background"></div>
+  <h2 class="text-green">🤖 Smarter Insights, Less Effort</h2>
+  <p class="lead text-pale-green mt-3">
+    Our AI instantly categorizes transactions and explains your financials — <br class="d-none d-md-block">
+    no spreadsheet skills or accounting degree needed.
+  </p>
+</section>
+
+<section class="container my-5 py-5 text-center position-relative">
+  <div class="glow-accent"></div>
+  <h2 class="text-green">📈 Powerful Reports & Visuals</h2>
+  <div class="d-flex flex-wrap justify-content-center gap-4 my-4">
+    <div class="card card-custom chart-card" style="width: 18rem;">
+      <img src="{{ url_for('static', filename='images/covers/3d_pie_chart.jpg') }}" class="card-img-top" alt="Spending Categories Pie Chart">
+      <div class="card-body">
+        <p class="card-text text-pale-green">Spending Categories</p>
+      </div>
+    </div>
+    <div class="card card-custom chart-card" style="width: 18rem;">
+      <img src="{{ url_for('static', filename='images/covers/flat-lay-statistics-presentation-with-chart.jpg') }}" class="card-img-top" alt="Income vs Expenses Over Time">
+      <div class="card-body">
+        <p class="card-text text-pale-green">Income vs Expenses</p>
+      </div>
+    </div>
+  </div>
+  <p class="text-pale-green mt-3">
+    Instantly visualize your financial health with interactive charts and smart summaries.
+  </p>
+</section>
+
+<section class="container my-5 py-5">
+  <h2 class="text-center mb-4 text-green">💬 What Our Users Say</h2>
+  <div class="row justify-content-center">
+    <div class="col-md-6 mb-4">
+      <div class="card card-custom blockquote text-center p-4">
+        <p>"This app simplified my bookkeeping and saved me hours every week!"</p>
+        <footer class="blockquote-footer mt-2">Jane D.</footer>
+      </div>
+    </div>
+    <div class="col-md-6 mb-4">
+      <div class="card card-custom blockquote text-center p-4">
+        <p>"The AI features are a game-changer — it understands my transactions better than I do!"</p>
+        <footer class="blockquote-footer mt-2">Mark S.</footer>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="text-center py-4 mt-5 text-green border-top border-green">
+  &copy; {{ current_year }} EazyBizy. All rights reserved.
+</footer>
+{% endblock %}
