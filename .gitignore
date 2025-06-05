@@ -26,7 +26,3 @@ config.py
 
 # Session files
 flask_session/
-
-#specific files
-eazybizy.txt
-structure.txt
