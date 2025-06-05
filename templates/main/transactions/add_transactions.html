@@ -84,45 +84,59 @@
 
             <!-- Transaction Lines -->
             <h5 class="fw-semibold text-light mb-3">📌 Transaction Lines</h5>
-            <div id="transaction-lines">
-              <div class="row g-3 mb-3 align-items-end rounded-4 p-3 transaction-line" style="background-color: #232323; border: 1px solid #343a40;">
+            <div class="table-responsive">
+  <div id="transaction-table" style="background-color: #232323; border: 1px solid #343a40; border-radius: 0.5rem;">
+    <!-- Table Header -->
+    <div class="row g-3 p-3" style="border-bottom: 1px solid #343a40;">
+      <div class="col-md-3">
+        <label class="form-label text-light fw-bold">📂 Account</label>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label text-light fw-bold">💸 Amount</label>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label text-light fw-bold">↔️ Debit/Credit</label>
+      </div>
+    </div>
+    
+    <!-- Transaction Lines Container -->
+    <div id="transaction-lines">
+      <!-- First Line -->
+      <div class="row g-3 p-3 align-items-end transaction-line">
+        <div class="col-md-3">
+          <select name="account_id[]" class="form-select rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" required>
+            <option value="">Select Account</option>
+            {% for acc in accounts %}
+            <option value="{{ acc.id }}">{{ acc.name }} ({{ acc.type }})</option>
+            {% endfor %}
+          </select>
+        </div>
 
-                <div class="col-md-3">
-                  <label class="form-label text-light">📂 Account</label>
-                  <select name="account_id[]" class="form-select rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" required>
-                    <option value="">Select Account</option>
-                    {% for acc in accounts %}
-                    <option value="{{ acc.id }}">{{ acc.name }} ({{ acc.type }})</option>
-                    {% endfor %}
-                  </select>
-                </div>
+        <div class="col-md-2">
+          <input type="number" name="amount[]" step="0.01" class="form-control rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" placeholder="0.00" required>
+        </div>
 
-                <div class="col-md-2">
-                  <label class="form-label text-light">💸 Amount</label>
-                  <input type="number" name="amount[]" step="0.01" class="form-control rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" placeholder="0.00" required>
-                </div>
+        <div class="col-md-3">
+          <select name="d_c[]" class="form-select rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" required>
+            <option value="">Select</option>
+            <option value="debit">Debit</option>
+            <option value="credit">Credit</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-                <div class="col-md-3">
-                  <label class="form-label text-light">↔️ Debit/Credit</label>
-                  <select name="d_c[]" class="form-select rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" required>
-                    <option value="">Select</option>
-                    <option value="debit">Debit</option>
-                    <option value="credit">Credit</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <!-- Add / Remove Buttons -->
-            <div class="d-flex gap-3 mb-4">
-              <button type="button" id="add-line" class="btn btn-outline-success rounded-pill px-4">
-                ➕ Add Line
-              </button>
-              <button type="button" id="remove-line" class="btn btn-outline-danger rounded-pill px-4">
-                ➖ Remove Last Line
-              </button>
-            </div>
-
+<!-- Add / Remove Buttons -->
+<div class="d-flex gap-3 my-3">
+  <button type="button" id="add-line" class="btn btn-outline-success rounded-pill px-4">
+    ➕ Add Line
+  </button>
+  <button type="button" id="remove-line" class="btn btn-outline-danger rounded-pill px-4">
+    ➖ Remove Last Line
+  </button>
+</div>
             <!-- Submit Button -->
             <div class="d-grid">
               <button type="submit" class="btn btn-success rounded-pill py-2 fw-bold">
@@ -174,8 +188,6 @@
 
 
 
-
-
 document.addEventListener('DOMContentLoaded', function() {
     // Add new transaction line
     document.getElementById('add-line').addEventListener('click', function() {
@@ -202,6 +214,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
 </script>
 {% endblock %}
