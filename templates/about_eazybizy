@@ -38,20 +38,20 @@
   <div class="text-center mb-5">
     <h1 class="text-green mb-4">About EazyBizy</h1>
     <p class="lead text-pale-green mx-auto" style="max-width: 800px;">
-      Your friendly financial companion that simplifies money management without the accounting jargon
+      Your friendly bookkeeping companion that simplifies accounting with fewer the accounting jargon
     </p>
   </div>
 
   <div class="developer mb-5 text-center">
     <div class="d-flex flex-column align-items-center">
-    <h2 class="text-green mt-2">Meet the Creator</h2>
+    <h2 class="text-green mt-2">Ola cs50</h2>
   </div>
       <div class="position-relative mb-4">
       <img src="{{ url_for('static', filename='images/me.jpg') }}" 
            class="developer-image img-fluid rounded-circle border border-4 border-light-green shadow-lg"
            alt="Developer Photo">
       <span class="position-absolute bottom-0 end-0 bg-light-green text-dark rounded-circle p-2 shadow">
-        👨‍💻
+      
       </span>
     </div>
     </div>
@@ -60,9 +60,9 @@
     <div class="card card-custom mt-3 mx-auto" style="max-width: 800px;">
       <div class="card-body">
         <p class="card-text text-pale-green">
-          "Hi there! I'm <strong>Medhanie Petros</strong>, a developer on the go with a passion for making financial tools accessible to everyone. 
-          I created EazyBizy after struggling to find simple yet powerful money management software that didn't require 
-          an accounting degree to use."
+          "Hi there! I'm <strong>Medhanie Petros</strong>, a developer on the go with a passion for coding and accounting tools. 
+          I developed EazyBizy after searching to find simple yet powerful accounting software that didn't require 
+          an accounting degree to use. Although is not perfect at all."
         </p>
         <p class="card-text text-pale-green mt-3">
           "As a CS50 student, I wanted to build something that would help real people with real financial challenges.
@@ -80,7 +80,7 @@
           <div class="card-body">
             <h5 class="card-title"> Transaction Tracking Made Simple</h5>
             <p class="card-text text-pale-green">
-              No more spreadsheets! Log purchases in seconds with our 
+              No more spreadsheets! Log transactions in seconds with the 
               intuitive interface or use the help of ai in recording transactions if you have limited accounting knowledge.
             </p>
           </div>
@@ -97,6 +97,8 @@
         </div>
       </div>
       </div>
+
+      <div class="row g-4 justify-content-center">
       <div class="col-md-6 col-lg-5">
         <div class="card card-custom feature-item h-100">
           <div class="card-body">
@@ -111,13 +113,14 @@
       <div class="col-md-6 col-lg-5">
         <div class="card card-custom feature-item h-100">
           <div class="card-body">
-            <h5 class="card-title"> Intelligent analysis About Your Money</h5>
+            <h5 class="card-title"> Intelligent analysis of Accounts</h5>
             <p class="card-text text-pale-green">
               Request ai analysis for free and get answers in simple language, 
               not spreadsheet cells.
             </p>
           </div>
         </div>
+      </div>
       </div>
     </div>
   </div>
@@ -127,13 +130,13 @@
       <div class="card-body">
         <h2 class="text-green mb-4">🎓 The CS50 Journey</h2>
         <p class="text-pale-green">
-          EazyBizy began as my CS50 final project - a challenge to build something meaningful with the skills I'd learned. 
+          EazyBizy is my CS50 final project - a challenge to build something meaningful with the skills I've learned. 
           What started as a basic transaction tracker it may grow into a full-fledged financial assistant. the journey was full of:
         </p>
         <ul class="text-start text-pale-green mx-auto" style="max-width: 600px;">
           <li>Countless hours debugging Flask routes</li>
-          <li>Tweking and refering books, blogs and ai models on how to implement everything</li>
-          <li>Learning JS for everything</li>
+          <li>Tweking and refering books, blogs and ai models on how to implement certain new things</li>
+          <li>Learning JS, sqlAlchemy and other python libraries</li>
           <li>Implementing ai api for the app integration</li>
           <li>Learning how to make charts actually useful (not just pretty)</li>
           <li>And so so more ....</li>
