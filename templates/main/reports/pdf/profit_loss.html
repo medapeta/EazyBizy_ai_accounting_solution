@@ -110,6 +110,28 @@
       background-color: #1c1c1c;
       color: #90caf9;
     }
+     .net-loss {
+      font-weight: bold;
+      font-size: 1.4rem;
+      text-align: right;
+      margin-top: 2rem;
+      padding: 1rem;
+      border: 2px dashed #fe5c5c;
+      border-radius: 8px;
+      background-color: #1c1c1c;
+      color: #e73f3f;
+    }
+     .net-br-even {
+      font-weight: bold;
+      font-size: 1.4rem;
+      text-align: right;
+      margin-top: 2rem;
+      padding: 1rem;
+      border: 2px dashed #f6ea64;
+      border-radius: 8px;
+      background-color: #1c1c1c;
+      color: #f1fa4c;
+    }
   </style>
 </head>
 <body>
@@ -168,9 +190,19 @@
     </tfoot>
   </table>
 
+  {% if total_ie.net > 0 %}
   <div class="net-profit">
-    Net Profit / Loss: {{ "{:,.2f}".format(total_ie.net) }}
+    Net Profit: {{ "{:,.2f}".format(total_ie.net) }}
   </div>
+  {% elif total_ie["net"] == 0 %}
+   <div class="net-br-even">
+    Break-Even
+  </div>
+  {% else %}
+  <div class="net-loss">
+    Net Loss: {{ "{:,.2f}".format(total_ie.net) }}
+  </div>
+  {% endif%}
 
 </body>
 </html>
