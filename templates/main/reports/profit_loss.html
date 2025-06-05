@@ -14,9 +14,9 @@
         📄 Print P&L PDF
       </a>
     </div>
-  <
+  
 
-  <!-- AI Card (matches Balance Sheet style) -->
+   
   <div class="container">
     <div class="card bg-dark text-light border-success rounded-4 shadow-lg">
       <div class="card-header bg-success bg-opacity-25 border-success d-flex justify-content-center align-items-center" 
@@ -126,6 +126,7 @@
     const output = document.getElementById("aiOutput");
     const responseBox = document.getElementById("aiResponse");
 
+    //similar the bs logic is used here also to fetch results using js
     try {
       const res = await fetch("/reports/profit_loss/ai_analysis", {
         method: "POST"

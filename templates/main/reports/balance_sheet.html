@@ -143,11 +143,12 @@
   document.getElementById("aiForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    // Optional: You can still use input if needed for something else
-    //const input = document.getElementById("transactionInput").value;
+   
     const output = document.getElementById("aiOutput");
     const responseBox = document.getElementById("aiResponse");
 
+    // here I used chatgpt to for js logic to fetch from 
+    // app.py and import the results of the ai analysis
     try {
       // New AI Profit & Loss Analysis POST request
       const res = await fetch("/reports/balance_sheet/ai_analysis", {
