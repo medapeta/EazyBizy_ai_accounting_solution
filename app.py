@@ -134,7 +134,12 @@ def register():
     # GET request
     return render_template("register.html")
 
+@app.route("/help")
+def help():
+    return render_template("main/help.html")
+
 @app.route("/about")
+@login_required
 def about():
     return render_template("about_eazybizy")
 

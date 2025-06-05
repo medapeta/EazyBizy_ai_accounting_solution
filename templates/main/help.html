@@ -1,0 +1,456 @@
+{% extends "main/dash_layout.html" %}
+
+{% block content %}
+<style>
+  /* Define CSS variables that work with the dark theme */
+  :root {
+    --light-green: #34d399;
+    --medium-green: #059669;
+    --dark-green: #047857;
+    --pale-green: #a7f3d0;
+    --dark-bg: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --text-light: #f8f9fa;
+    --text-muted: #adb5bd;
+    --warning-color: #ffc107;
+  }
+  
+  .help-container {
+    background: linear-gradient(135deg, #1e293b, #334155) !important;
+    border: 2px solid var(--light-green) !important;
+    color: var(--text-light) !important;
+  }
+  
+  .step-card {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--light-green) !important;
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--light-green) !important;
+    color: var(--text-light) !important;
+  }
+  
+  .step-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(52, 211, 153, 0.3) !important;
+    border-color: var(--light-green) !important;
+  }
+  
+  .step-number {
+    background: var(--light-green) !important;
+    color: var(--dark-bg) !important;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+  
+  .feature-highlight {
+    background: rgba(52, 211, 153, 0.1) !important;
+    border: 1px dashed var(--light-green) !important;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+    color: var(--text-light) !important;
+  }
+  
+  .action-item {
+    background: rgba(52, 211, 153, 0.15) !important;
+    border-left: 3px solid var(--light-green) !important;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    border-radius: 0 8px 8px 0;
+    color: var(--text-light) !important;
+  }
+  
+  .pro-tip {
+    background: rgba(255, 193, 7, 0.15) !important;
+    border: 2px solid var(--warning-color) !important;
+    color: var(--text-light) !important;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+  }
+  
+  .section-icon {
+    color: var(--light-green);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .progress-indicator {
+    height: 4px;
+    background: var(--light-green);
+    border-radius: 2px;
+    margin: 2rem 0;
+  }
+
+  /* Text color overrides to ensure visibility */
+  .text-green {
+    color: var(--light-green) !important;
+  }
+  
+  .text-pale-green {
+    color: var(--pale-green) !important;
+  }
+  
+  .lead {
+    color: var(--text-muted) !important;
+  }
+  
+  /* Card customizations for dark theme */
+  .card-custom {
+    background-color: var(--card-bg) !important;
+    border: 1px solid #404040 !important;
+    color: var(--text-light) !important;
+  }
+  
+  .card-title {
+    color: var(--light-green) !important;
+  }
+  
+  .card-text {
+    color: var(--text-muted) !important;
+  }
+  
+  /* List styling */
+  ul {
+    color: var(--text-muted) !important;
+  }
+  
+  ul li {
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Button styling improvements */
+  .btn-primary {
+    background-color: var(--light-green) !important;
+    border-color: var(--light-green) !important;
+    color: var(--dark-bg) !important;
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--medium-green) !important;
+    border-color: var(--medium-green) !important;
+  }
+  
+  .btn-success {
+    background-color: var(--dark-green) !important;
+    border-color: var(--dark-green) !important;
+  }
+  
+  .btn-outline-secondary {
+    border-color: var(--text-muted) !important;
+    color: var(--text-muted) !important;
+  }
+  
+  .btn-outline-secondary:hover {
+    background-color: var(--text-muted) !important;
+    color: var(--dark-bg) !important;
+  }
+  
+  /* Pro tip specific styling */
+  .pro-tip h5 {
+    color: var(--warning-color) !important;
+    margin-bottom: 1rem;
+  }
+  
+  .pro-tip strong {
+    color: var(--light-green) !important;
+  }
+  
+  /* Small text styling */
+  small {
+    color: var(--text-muted) !important;
+  }
+</style>
+
+<section class="help-container container my-5 p-4 p-md-5 rounded-3 shadow-lg">
+  <!-- Header -->
+  <div class="text-center mb-5">
+    <h1 class="text-green mb-3"> Welcome to EazyBizy!</h1>
+    <div class="progress-indicator mx-auto" style="width: 100px;"></div>
+    <p class="lead text-pale-green mx-auto" style="max-width: 800px;">
+      Your friendly bookkeeping companion is ready to help! Follow this guide to get started with confidence.
+    </p>
+  </div>
+
+  <!-- Step 1: First Steps -->
+  <div class="mb-5">
+    <div class="d-flex align-items-center mb-4">
+      <div class="step-number me-3">1</div>
+      <h2 class="text-green mb-0">First Steps After Registration</h2>
+    </div>
+    
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card card-custom step-card h-100">
+          <div class="card-body">
+            <div class="section-icon"></div>
+            <h5 class="card-title text-green">Dashboard Tour</h5>
+            <p class="card-text text-pale-green">
+              Your dashboard is your financial command center. Here you'll see:
+            </p>
+            <ul class="text-pale-green">
+              <li>Business snapshot and quick stats</li>
+              <li>Cash balance and net worth</li>
+              <li>Recent transactions</li>
+              <li>Income vs. expense charts</li>
+            </ul>
+            <div class="action-item">
+              <strong class="text-green">Action:</strong> Visit your dashboard first to get familiar with the layout
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="card card-custom step-card h-100">
+          <div class="card-body">
+            <div class="section-icon">⚙️</div>
+            <h5 class="card-title text-green">Complete Setup</h5>
+            <p class="card-text text-pale-green">
+              Take 5 minutes to personalize your experience:
+            </p>
+            <ul class="text-pale-green">
+              <li>Verify your business name</li>
+              <li>Set your fiscal year</li>
+              <li>Choose your currency</li>
+              <li>Configure basic preferences</li>
+            </ul>
+            <div class="action-item">
+              <strong class="text-green">Action:</strong> Go to Settings → Profile to update your information
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Essential Pages -->
+  <div class="mb-5">
+    <div class="d-flex align-items-center mb-4">
+      <div class="step-number me-3">2</div>
+      <h2 class="text-green mb-0">Essential Pages to Explore</h2>
+    </div>
+    
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="card card-custom step-card h-100">
+          <div class="card-body text-center">
+            <div class="section-icon">➕</div>
+            <h5 class="card-title text-green">Transactions</h5>
+            <p class="card-text text-pale-green">Record your income and expenses with ease</p>
+            <div class="feature-highlight">
+              <strong class="text-green">Key Features:</strong>
+              <ul class="text-pale-green text-start mt-2">
+                <li>Add transactions with AI help</li>
+                <li>View and edit past entries</li>
+                <li>Automatic categorization</li>
+                <li>Debit/credit validation</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-4">
+        <div class="card card-custom step-card h-100">
+          <div class="card-body text-center">
+            <div class="section-icon">📑</div>
+            <h5 class="card-title text-green">Reports</h5>
+            <p class="card-text text-pale-green">Generate professional financial statements</p>
+            <div class="feature-highlight">
+              <strong class="text-green">Available Reports:</strong>
+              <ul class="text-pale-green text-start mt-2">
+                <li>Profit & Loss Statement</li>
+                <li>Balance Sheet</li>
+                <li>Trial Balance</li>
+                <li>PDF Export & AI Analysis</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-4">
+        <div class="card card-custom step-card h-100">
+          <div class="card-body text-center">
+            <div class="section-icon">⚙️</div>
+            <h5 class="card-title text-green">Settings</h5>
+            <p class="card-text text-pale-green">Configure your chart of accounts and categories</p>
+            <div class="feature-highlight">
+              <strong class="text-green">Setup Options:</strong>
+              <ul class="text-pale-green text-start mt-2">
+                <li>Chart of Accounts</li>
+                <li>Income/Expense Categories</li>
+                <li>Opening Balances</li>
+                <li>Business Profile</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: First Actions -->
+  <div class="mb-5">
+    <div class="d-flex align-items-center mb-4">
+      <div class="step-number me-3">3</div>
+      <h2 class="text-green mb-0">Recommended First Actions</h2>
+    </div>
+    
+    <div class="card card-custom step-card">
+      <div class="card-body">
+        <h5 class="text-green mb-4">Follow this checklist to get started:</h5>
+        
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="action-item">
+              <h6 class="text-green">1. Add Your Essential Accounts</h6>
+              <p class="text-pale-green mb-2">Go to: Settings → Accounts → "+ Add Account"</p>
+              <p class="text-pale-green">Start with these 5 accounts:</p>
+              <ul class="text-pale-green">
+                <li>Cash (Asset)</li>
+                <li>Accounts Receivable (Asset)</li>
+                <li>Inventory (Asset)</li>
+                <li>Accounts Payable (Liability)</li>
+                <li>Owner's Equity (Equity)</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="action-item">
+              <h6 class="text-green">2. Record Opening Balances</h6>
+              <p class="text-pale-green">Set up your starting position:</p>
+              <ul class="text-pale-green">
+                <li>Enter current cash position</li>
+                <li>Add outstanding invoices</li>
+                <li>Record any existing bills</li>
+                <li>Set initial inventory value</li>
+              </ul>
+            </div>
+            
+            <div class="action-item mt-3">
+              <h6 class="text-green">3. Make Your First Transaction</h6>
+              <p class="text-pale-green">Practice with a simple entry and use the AI helper if you're unsure about categorization!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4: Learning Resources -->
+  <div class="mb-5">
+    <div class="d-flex align-items-center mb-4">
+      <div class="step-number me-3">4</div>
+      <h2 class="text-green mb-0">Learning Resources</h2>
+    </div>
+    
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card card-custom step-card h-100">
+          <div class="card-body">
+            <h5 class="text-green">Built-in Help</h5>
+            <ul class="text-pale-green">
+              <li>Blue "?" icons on each page for context help</li>
+              <li>AI Assistant for transaction categorization</li>
+              <li>Tutorial tooltips for first-time users</li>
+              <li>Form validation with helpful error messages</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="card card-custom step-card h-100">
+          <div class="card-body">
+            <h5 class="text-green">AI-Powered Features</h5>
+            <ul class="text-pale-green">
+              <li>Automatic transaction categorization</li>
+              <li>Financial report analysis</li>
+              <li>Dashboard insights and recommendations</li>
+              <li>Plain-English explanations of accounting terms</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 5: Troubleshooting -->
+  <div class="mb-5">
+    <div class="d-flex align-items-center mb-4">
+      <div class="step-number me-3">5</div>
+      <h2 class="text-green mb-0">When You Get Stuck</h2>
+    </div>
+    
+    <div class="card card-custom step-card">
+      <div class="card-body">
+        <div class="row g-4">
+          <div class="col-md-4">
+            <h6 class="text-green">Form Issues?</h6>
+            <ul class="text-pale-green">
+              <li>Red highlights show required fields</li>
+              <li>Hover over warnings for details</li>
+              <li>Check field format requirements</li>
+            </ul>
+          </div>
+          
+          <div class="col-md-4">
+            <h6 class="text-green">Balance Errors?</h6>
+            <ul class="text-pale-green">
+              <li>Use Trial Balance report</li>
+              <li>Verify equal debits/credits</li>
+              <li>Check account types</li>
+            </ul>
+          </div>
+          
+          <div class="col-md-4">
+            <h6 class="text-green">Need Help?</h6>
+            <ul class="text-pale-green">
+              <li>Ask the AI assistant</li>
+              <li>Check context tooltips</li>
+              <li>Review this help page</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pro Tips -->
+  <div class="pro-tip">
+    <h5 class="mb-3">💡 Pro Tips for Success</h5>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <p class="mb-2"><strong>Start Simple:</strong> Don't try to set up everything at once. Add accounts as you need them.</p>
+        <p class="mb-2"><strong>Use AI Help:</strong> When in doubt, let the AI assistant guide your transaction categorization.</p>
+      </div>
+      <div class="col-md-6">
+        <p class="mb-2"><strong>Regular Updates:</strong> Record transactions weekly to stay on top of your finances.</p>
+        <p class="mb-2"><strong>Check Reports:</strong> Review your Profit & Loss monthly to track business performance.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="text-center mt-5">
+    <a href="/dashboard" class="btn btn-primary btn-lg px-4 me-3">Start Using EazyBizy</a>
+    <a href="/settings" class="btn btn-outline-secondary btn-lg px-4 me-3">Go to Settings</a>
+    <a href="/transactions/add" class="btn btn-success btn-lg px-4">Add First Transaction</a>
+  </div>
+  
+  <div class="text-center mt-4">
+    <p class="text-pale-green">
+      <small>Need more help? Look for the blue "?" icons throughout the app for context-specific guidance.</small>
+    </p>
+  </div>
+</section>
+{% endblock %}
