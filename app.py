@@ -705,7 +705,7 @@ def delete_profile():
     db_session.commit()
     session.clear()
     flash("Profile deleted. successfuly", "success")
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
 @app.route('/logout')
 def logout():
