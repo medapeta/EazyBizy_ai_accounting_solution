@@ -26,3 +26,7 @@ config.py
 
 # Session files
 flask_session/
+
+#specific files
+project_snapshot.txt
+project_snapshot.py
