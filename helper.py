@@ -8,7 +8,7 @@ from models import users_db, transactions_db, transaction_detail_db, chart_of_ac
 from dotenv import load_dotenv
 import os
 from collections import defaultdict
-from weasyprint import HTML
+# from weasyprint import HTML
 import requests
 from functools import wraps
 

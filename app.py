@@ -11,6 +11,7 @@ import os
 from collections import defaultdict
 from helper import * #query_transaction_data ,get_profit_loss_data,get_balance_sheet_data , get_ledger_data,show_income_expense_chart, show_cash_chart,ask_deepseek
 from weasyprint import HTML
+from flask_mail import Mail, Message
 
 load_dotenv()  # Load from .env file
 
@@ -30,6 +31,16 @@ Flasksession(app)
 engine = create_engine('sqlite:///ai-bookeeping.db')
 sqlSession = sessionmaker(bind=engine)
 db_session = sqlSession()
+
+# Mail configuration
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # or your SMTP server
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'petrosmedhanie59@gmail.com'
+app.config['MAIL_PASSWORD'] = 'mowz pukn dupn egdy'   
+app.config['MAIL_DEFAULT_SENDER'] = 'petrosmedhanie59@gmail.com'
+
+mail = Mail(app)
 
 
 @app.route("/")
@@ -708,6 +719,38 @@ def delete_profile():
     flash("Profile deleted. successfuly", "success")
     return redirect(url_for('index'))
 
+@app.route('/settings/report_problem', methods=['GET', 'POST'])
+def report_problem():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        subject = request.form['subject']
+        message = request.form['message']
+        
+        msg = Message(
+            subject=f"[Problem Report] {subject}",
+            recipients=['petrosmedhanie59@gmail.com'],  
+            body=f"""
+                        A user has reported a problem:
+
+                        Name: {name}
+                        Email: {email}
+                        Subject: {subject}
+
+                        Message:
+                        {message}
+                        """
+                                )
+
+        try:
+            mail.send(msg)
+            flash("Your report has been sent successfully!", "success")
+        except Exception as e:
+            print(e)
+            flash("There was an error sending your report. Please try again later.", "danger")
+
+        return redirect('/settings/report_problem')
+    return render_template('main/settings/problem_report.html')
 @app.route('/logout')
 def logout():
     session.clear()

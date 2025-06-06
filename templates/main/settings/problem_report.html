@@ -1,0 +1,39 @@
+{% extends "/main/dash_layout.html" %}
+
+{% block content %}
+<div class="container-fluid main-content">
+  <div class="card-custom p-4">
+    <h2 class="text-green mb-4"><i class="bi bi-bug me-2"></i>Report a Problem</h2>
+
+    <p class="text-pale-green mb-4">
+      Encountering an issue? Let us know and we'll look into it. Fill out the form below and our team will get back to you shortly.
+    </p>
+
+    <form method="POST" action="/settings/report_problem">
+      <div class="mb-3">
+        <label for="name" class="form-label text-green">Your Name</label>
+        <input type="text" class="form-control bg-dark border-secondary text-light" id="name" name="name" required>
+      </div>
+      
+      <div class="mb-3">
+        <label for="email" class="form-label text-green">Email Address</label>
+        <input type="email" class="form-control bg-dark border-secondary text-light" id="email" name="email" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="subject" class="form-label text-green">Subject</label>
+        <input type="text" class="form-control bg-dark border-secondary text-light" id="subject" name="subject" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="message" class="form-label text-green">Message</label>
+        <textarea class="form-control bg-dark border-secondary text-light" id="message" name="message" rows="5" required></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary mt-3">
+        <i class="bi bi-send me-1"></i>Submit Report
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
