@@ -2,23 +2,23 @@
 
 {% block content %}
 <style>
-  body {
+  .dashboard-page {
     background-color: #121212;
     color: #e0e0e0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
 
-  h1, h5, h6 {
+  .dashboard-page h1, .dashboard-page h5, .dashboard-page h6 {
     font-weight: 600;
   }
 
-  a, a:hover {
+  .dashboard-page a, .dashboard-page a:hover {
     color: #90caf9;
     text-decoration: none;
   }
 
   /* Card Styles */
-  .card {
+  .dashboard-page .card {
     background: #1e1e1e;
     border-radius: 16px;
     border: none;
@@ -26,18 +26,18 @@
     transition: transform 0.2s ease;
   }
 
-  .card:hover {
+  .dashboard-page .card:hover {
     transform: translateY(-5px);
   }
 
-  .card-header {
+  .dashboard-page .card-header.dashboard-header {
     background: linear-gradient(135deg, #47603f, #c0f6c5);
     color: #fff;
     border-radius: 16px 16px 0 0;
     font-weight: 600;
   }
 
-  .list-group-item {
+  .dashboard-page .list-group-item {
     background-color: #232323;
     color: #e0e0e0;
     border: none;
@@ -46,110 +46,85 @@
     transition: background 0.2s ease;
   }
 
-  .list-group-item:hover {
+  .dashboard-page .list-group-item:hover {
     background-color: #2c2c2c;
   }
 
-  .btn {
+  .dashboard-page .btn {
     border-radius: 12px;
     padding: 0.75rem 1.25rem;
     font-weight: 500;
     transition: all 0.2s ease-in-out;
   }
 
-  .btn:hover {
+  .dashboard-page .btn:hover {
     opacity: 0.85;
   }
 
-  .btn-success {
+  .dashboard-page .btn-success {
     background: linear-gradient(135deg, #10b981, #059669);
     border: none;
     color: #fff;
   }
 
-  .btn-info {
+  .dashboard-page .btn-info {
     background: linear-gradient(135deg, #3b82f6, #2563eb);
     border: none;
     color: #fff;
   }
 
-  .btn-secondary {
+  .dashboard-page .btn-secondary {
     background: linear-gradient(135deg, #6b7280, #4b5563);
     border: none;
     color: #fff;
   }
 
-  .badge {
+  .dashboard-page .badge {
     border-radius: 10px;
     padding: 0.6rem 1.2rem;
-    background: linear-gradient(135deg, #4ade800a, #22c55e0b);
+    background: linear-gradient(135deg, #4ade80, #22c55e);
     color: #ffffff;
   }
 
-  .display-6 {
+  .dashboard-page .display-6 {
     font-size: 2rem;
     font-weight: 700;
   }
 
-  .quick-stats .card {
+  .dashboard-page .quick-stats .card {
     border-left: 6px solid;
     padding-left: 0.5rem;
   }
 
-  .quick-stats .card.border-primary { border-color: #3b82f6; }
-  .quick-stats .card.border-success { border-color: #22c55e; }
-  .quick-stats .card.border-danger { border-color: #ef4444; }
-  .quick-stats .card.border-warning { border-color: #f59e0b; }
+  .dashboard-page .quick-stats .border-primary { border-color: #3b82f6; }
+  .dashboard-page .quick-stats .border-success { border-color: #22c55e; }
+  .dashboard-page .quick-stats .border-danger { border-color: #ef4444; }
+  .dashboard-page .quick-stats .border-warning { border-color: #f59e0b; }
 
-  /* Chart background override */
-  #myChart {
+  .dashboard-page .custom-header {
+    background: linear-gradient(135deg, #b0ecab1b, #3d6b476b);
+    color: #ffffff;
+  }
+
+  #myChart, #cashChart {
     background-color: #1e1e1e !important;
     padding: 10px;
     border-radius: 16px;
   }
-
-  /* Headings & Spacing */
-  .bg-primary {
-    background: linear-gradient(135deg, #b0ecab1b, #3d6b476b) !important;
-  }
-
-  .text-primary { color: #60a5fa !important; }
-  .text-success { color: #34d399 !important; }
-  .text-danger { color: #f87171 !important; }
-  .text-warning { color: #facc15 !important; }
-  .text-muted { color: #9ca3af !important; }
-
-  /* Custom Upcoming Section */
-  .card-body ul li strong {
-    color: #fff;
-  }
-  .card-body p {
-    color: #fff;
-  }
-
-  .card-body ul li {
-    border-left: 3px solid #4b5563;
-    padding-left: 10px;
-    margin-bottom: 10px;
-  }
 </style>
 
-
-<!-- Main Dashboard Section -->
-<div class="container mt-4">
+<div class="dashboard-page container mt-4">
   <!-- Dashboard Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-primary text-white rounded">
+  <div class="d-flex justify-content-between align-items-center mb-4 p-3 custom-header rounded">
     <div>
       <h1 class="mb-0">Financial Dashboard of {{ business_name }}</h1>
       <p class="mb-0">🔄 {{ formatted_date }}</p>
-
     </div>
-    <div class="badge bg-light text-primary fs-6">{{ username}}</div>
+    <div class="badge fs-6">{{ username }}</div>
   </div>
 
   <!-- Quick Stats Row -->
-  <div class="row mb-4">
-    <!-- Cash Flow -->
+  <div class="row quick-stats mb-4">
     <div class="col-md-3 mb-3">
       <div class="card border-primary">
         <div class="card-body">
@@ -159,8 +134,7 @@
         </div>
       </div>
     </div>
-    
-    <!-- Income -->
+
     <div class="col-md-3 mb-3">
       <div class="card border-success">
         <div class="card-body">
@@ -170,8 +144,7 @@
         </div>
       </div>
     </div>
-    
-    <!-- Expenses -->
+
     <div class="col-md-3 mb-3">
       <div class="card border-danger">
         <div class="card-body">
@@ -181,8 +154,7 @@
         </div>
       </div>
     </div>
-    
-    <!-- Net Worth -->
+
     <div class="col-md-3 mb-3">
       <div class="card border-warning">
         <div class="card-body">
@@ -194,17 +166,13 @@
     </div>
   </div>
 
-   <!-- Financial Summary and Cash Flow Tracking -->
-  <!-- Inside dashboard.html -->
-<!-- dashboard.html -->
-  <div class="container mt-4">
+  <!-- Charts Section -->
   <div class="row">
-    <!-- Monthly Overview Chart -->
     <div class="col-md-6 mb-4">
       <div class="card shadow-lg border-0 h-100">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <div class="card-header dashboard-header d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Monthly Overview</h5>
-          <small class="text-light">Live update every 5s</small>
+          <small>Live update every 5s</small>
         </div>
         <div class="card-body">
           <canvas id="myChart" style="max-height: 300px;"></canvas>
@@ -212,12 +180,11 @@
       </div>
     </div>
 
-    <!-- Cash Flow Chart -->
     <div class="col-md-6 mb-4">
       <div class="card shadow-lg border-0 h-100">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <div class="card-header dashboard-header d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Cash Flow</h5>
-          <small class="text-light">Live update every 5s</small>
+          <small>Live update every 5s</small>
         </div>
         <div class="card-body">
           <canvas id="cashChart" style="max-height: 300px;"></canvas>
@@ -225,23 +192,20 @@
       </div>
     </div>
   </div>
-</div>
 
-  <!-- Content Row -->
+  <!-- Transaction and Quick Actions Row -->
   <div class="row">
     <!-- Recent Transactions -->
     <div class="col-lg-6 mb-4">
       <div class="card h-100">
-
         <div class="card-header bg-light">
           <h5 class="mb-0">⏳ Recent Transactions</h5>
         </div>
-
         <div class="card-body">
           <div class="list-group">
-            {% for trx in recent_transactions%}
+            {% for trx in recent_transactions %}
             <a href="#" class="list-group-item list-group-item-action">
-              <div class="d-flex w-100 justify-content-between">
+              <div class="d-flex justify-content-between">
                 <h6 class="mb-1">⬆️ {{ trx.description }}</h6>
                 <small class="text-success">${{ "%.2f"|format(trx.amount) }}</small>
               </div>
@@ -249,9 +213,7 @@
             </a>
             {% endfor %}
           </div>
-
           <a href="/transactions/transactions_list" class="btn btn-outline-primary mt-3 w-100">View All Transactions →</a>
-
         </div>
       </div>
     </div>
@@ -264,127 +226,98 @@
         </div>
         <div class="card-body">
           <div class="d-grid gap-2 mb-4">
-            <a href="/transactions/add_transactions" class="btn btn-success">
-              <i class="bi bi-plus-circle"></i> ➕ Record Transaction
-            </a>
-            <a href="/reports/profit_loss" class="btn btn-info">
-              <i class="bi bi-graph-up"></i> 📊 Generate Report
-            </a>
-            <a href="/settings/accounts" class="btn btn-secondary">
-              <i class="bi bi-gear"></i> ⚙️ Manage Accounts
-            </a>
+            <a href="/transactions/add_transactions" class="btn btn-success">➕ Record Transaction</a>
+            <a href="/reports/profit_loss" class="btn btn-info">📊 Generate Report</a>
+            <a href="/settings/accounts" class="btn btn-secondary">⚙️ Manage Accounts</a>
           </div>
-          
+
           <div class="card border-light">
             <div class="card-body">
               <h6 class="card-subtitle mb-2 text-muted">📅 Upcoming</h6>
               <ul class="list-unstyled">
-                <li class="mb-2">🗓️ <strong>Tax Deadline:</strong> June 30, 2024</li>
-                <li class="mb-2">💸 <strong>Next Bill:</strong> Internet ($99) due in 2 days</li>
+                <li>🗓️ <strong>Tax Deadline:</strong> June 30, 2024</li>
+                <li>💸 <strong>Next Bill:</strong> Internet ($99) due in 2 days</li>
                 <li>📊 <strong>Report Due:</strong> Quarterly financials by June 15</li>
               </ul>
             </div>
           </div>
+
         </div>
       </div>
     </div>
   </div>
-
 </div>
 
- <!-- a lot of references from https://www.chartjs.org/docs/latest/charts/ on chartjs 
-  and got help of chatgpt on its correct implementation of the charts also-->
-
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const ctx = document.getElementById('myChart').getContext('2d');
+  document.addEventListener('DOMContentLoaded', function () {
+    // Doughnut Chart
+    const doughnutCanvas = document.getElementById('myChart');
+    if (doughnutCanvas) {
+      const ctx = doughnutCanvas.getContext('2d');
+      const i = JSON.parse('{{ i | tojson | safe }}');
+      const e = JSON.parse('{{ e | tojson | safe }}');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          datasets: [{
+            data: [i, e],
+            backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)']
+          }],
+          labels: ['Income', 'Expense']
+        }
+      });
+    }
 
-        const i = JSON.parse('{{ i | tojson | safe }}');
-        const e = JSON.parse('{{ e | tojson | safe }}');
-        const myChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-              datasets: [{
-                data:i,e,
-                backgroundColor: [
-                  'rgb(255, 99, 132)',
-                  'rgb(54, 162, 235)',
-                ]
-              }],
-              labels: ['Income', 'Expense']
-            }
-        });
-    });
+    // Line Chart
+    const cashCanvas = document.getElementById('cashChart');
+    if (cashCanvas) {
+      const ctx = cashCanvas.getContext('2d');
+      const labels = JSON.parse('{{ cash_dates | tojson | safe }}');
+      const data = JSON.parse('{{ cash_balances | tojson | safe }}');
 
-    document.addEventListener('DOMContentLoaded', function () {
-    const ctx = document.getElementById('cashChart').getContext('2d');
-
-    // Example data — replace this with your actual data via Jinja or API
-    const labels = JSON.parse('{{ cash_dates | tojson | safe }}');
-    const data = JSON.parse('{{ cash_balances | tojson | safe }}');
-
-    const chart = new Chart(ctx, {
+      new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels,
-            datasets: [{
-                label: '💵 Cash Balance',
-                data: data,
-                fill: true,
-                tension: 0.4,
-                borderColor: 'rgba(0, 123, 255, 1)',
-                backgroundColor: 'rgba(0, 123, 255, 0.2)',
-                pointBackgroundColor: 'rgba(0, 123, 255, 1)',
-                pointRadius: 4,
-                borderWidth: 2,
-            }]
+          labels: labels,
+          datasets: [{
+            label: '💵 Cash Balance',
+            data: data,
+            fill: true,
+            tension: 0.4,
+            borderColor: 'rgba(0, 123, 255, 1)',
+            backgroundColor: 'rgba(0, 123, 255, 0.2)',
+            pointBackgroundColor: 'rgba(0, 123, 255, 1)',
+            pointRadius: 4,
+            borderWidth: 2,
+          }]
         },
         options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: true,
-                    labels: {
-                        color: '#fff'  // for dark themes
-                    }
-                },
-                tooltip: {
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                titleColor: '#fff',
-                bodyColor: '#fff',
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                borderWidth: 1,
-                borderRadius: 8,
-                padding: 12
-              }
+          responsive: true,
+          plugins: {
+            legend: {
+              labels: { color: '#fff' }
             },
-            interaction: {
-                mode: 'nearest',
-                intersect: false
-            },
-            scales: {
-                x: {
-                    ticks: {
-                        color: '#ccc'
-                    },
-                    grid: {
-                        color: 'rgba(255,255,255,0.1)'
-                    }
-                },
-                y: {
-                    ticks: {
-                        color: '#ccc'
-                    },
-                    grid: {
-                        color: 'rgba(255,255,255,0.1)'
-                    },
-                    beginAtZero: false
-                }
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              titleColor: '#fff',
+              bodyColor: '#fff'
             }
+          },
+          scales: {
+            x: {
+              ticks: { color: '#ccc' },
+              grid: { color: 'rgba(255,255,255,0.1)' }
+            },
+            y: {
+              ticks: { color: '#ccc' },
+              grid: { color: 'rgba(255,255,255,0.1)' }
+            }
+          }
         }
-    });
-});
-
- </script>
+      });
+    }
+  });
+</script>
 {% endblock %}
