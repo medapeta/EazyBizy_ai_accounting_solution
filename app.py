@@ -45,7 +45,7 @@ mail = Mail(app)
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html",current_year=datetime.now().year)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -82,7 +82,7 @@ def login():
             flash("Invalid username or password", "error")
             return redirect("/login")
         
-    return render_template("login.html")
+    return render_template("login.html",current_year=datetime.now().year)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -143,16 +143,15 @@ def register():
         return redirect("/dashboard")
 
     # GET request
-    return render_template("register.html")
+    return render_template("register.html",current_year=datetime.now().year)
 
 @app.route("/help")
 def help():
     return render_template("main/help.html")
 
 @app.route("/about")
-@login_required
 def about():
-    return render_template("about_eazybizy")
+    return render_template("about_eazybizy.html")
 
 @app.route("/dashboard")
 @login_required
