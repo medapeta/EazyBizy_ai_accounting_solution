@@ -1,4 +1,4 @@
-from app import db  # Import the Flask-SQLAlchemy instance
+from extension import db  # Import the Flask-SQLAlchemy instance
 from datetime import datetime
 
 class users_db(db.Model):

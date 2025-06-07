@@ -1,30 +1,26 @@
-from flask import Flask, flash, redirect, render_template, request, session, url_for, make_response
-from flask_session import Session #as Flasksession
+from flask import Flask, flash, redirect, render_template, request, url_for, make_response
+from flask_session import Session as Flasksession
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, func, extract
-# from sqlalchemy.orm import sessionmaker
-# from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
-#from models import users_db, transactions_db, transaction_detail_db, chart_of_accounts_db, categories_db
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 import os
 from helper import * #query_transaction_data ,get_profit_loss_data,get_balance_sheet_data , get_ledger_data,show_income_expense_chart, show_cash_chart,ask_deepseek
 from weasyprint import HTML
 from flask_mail import Mail, Message
-#from init_db import engine, Base #this is for deployment purpuses to initialize db tables before request
+from extension import db # to avoid circular import problem
 from flask_wtf.csrf import CSRFProtect
 
 
 load_dotenv()  # Load from .env file
 
 app = Flask(__name__)
-db = SQLAlchemy() # Create db first
 
 
 # ===== Core Configurations =====
 app.secret_key = os.getenv("SECRET_KEY")
-csrf = CSRFProtect(app)
+#csrf = CSRFProtect(app)
 
 # ===== Database Configuration =====
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///ai-bookeeping.db")
@@ -36,10 +32,11 @@ db.init_app(app)
 
 from models import *
 
-# ===== Session Configuration =====
 app.config["SESSION_TYPE"] = "sqlalchemy"
-app.config["SESSION_SQLALCHEMY"] = db  # Link to Flask-SQLAlchemy
-Session(app)
+app.config["SESSION_SQLALCHEMY"] = db  
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_USE_SIGNER"] = True
+Flasksession(app)  # Create Session object
 
 # ===== Mail Configuration =====
 app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
@@ -768,4 +765,4 @@ def logout():
     return render_template("index.html")
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=True)
