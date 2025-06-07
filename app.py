@@ -24,6 +24,8 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")#, "sqlite:///a
 if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
     app.config["SQLALCHEMY_DATABASE_URI"] = app.config["SQLALCHEMY_DATABASE_URI"].replace("postgres://", "postgresql://", 1)
 
+print("🔗 SQLAlchemy DB URI:", app.config["SQLALCHEMY_DATABASE_URI"])
+
 # Initialize db
 db.init_app(app)
 
@@ -39,6 +41,12 @@ def initialize_database():
 initialize_database()
 
 from models import *
+
+from models import *
+
+with app.app_context():
+    db.create_all()
+    print(" Tables created.")
 
 app.config["SESSION_TYPE"] = "sqlalchemy"
 app.config["SESSION_SQLALCHEMY"] = db  
