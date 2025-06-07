@@ -11,57 +11,35 @@ from flask_mail import Mail, Message
 from extension import db # to avoid circular import problem
 
 
-load_dotenv()  # Load from .env file
-
+load_dotenv()
 app = Flask(__name__)
-
-
-# ===== Core Configurations =====
 app.secret_key = os.getenv("SECRET_KEY")
 
 # ===== Database Configuration =====
-# app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")#, "sqlite:///ai-bookeeping.db"
-# if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
-#     app.config["SQLALCHEMY_DATABASE_URI"] = app.config["SQLALCHEMY_DATABASE_URI"].replace("postgres://", "postgresql://", 1)
-
-# Replace with this
 db_uri = os.getenv("DATABASE_URL")
 if not db_uri:
-    raise RuntimeError("❌ DATABASE_URL not set in environment variables!")
+    raise RuntimeError("❌ DATABASE_URL not set!")
 
 if db_uri.startswith("postgres://"):
     db_uri = db_uri.replace("postgres://", "postgresql://", 1)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+print("🔗 SQLAlchemy DB URI:", db_uri)
 
-print("🔗 SQLAlchemy DB URI:", app.config["SQLALCHEMY_DATABASE_URI"])
-
-# Initialize db
 db.init_app(app)
 
-
-# Auto-create tables if not already there
-def initialize_database():
-    with app.app_context():
-        inspector = inspect(db.engine)
-        if not inspector.get_table_names():
-            db.create_all()
-            print("✅ Database initialized.")
-
-initialize_database()
-
-from models import *
-
+from models import *  # 👈 Moved up before db.create_all()
 
 with app.app_context():
     db.create_all()
-    print(" Tables created.")
+    print("✅ Tables created")
 
+# Session config
 app.config["SESSION_TYPE"] = "sqlalchemy"
-app.config["SESSION_SQLALCHEMY"] = db  
+app.config["SESSION_SQLALCHEMY"] = db
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_USE_SIGNER"] = True
-Flasksession(app)  # Create Session object
+Flasksession(app)
 
 # ===== Mail Configuration =====
 app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
