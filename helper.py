@@ -4,20 +4,16 @@ from sqlalchemy import create_engine, func, extract
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
-from models import users_db, transactions_db, transaction_detail_db, chart_of_accounts_db, categories_db
+from models import * #users_db, transactions_db, transaction_detail_db, chart_of_accounts_db, categories_db
 from dotenv import load_dotenv
 import os
 from collections import defaultdict
-# from weasyprint import HTML
 import requests
 from functools import wraps
-
+from extension import db
 
 load_dotenv()  # Load from .env file
 
-engine = create_engine('sqlite:///ai-bookeeping.db')
-Session = sessionmaker(bind=engine)
-db_session = Session()
 
 
 def login_required(f):
@@ -32,7 +28,7 @@ def login_required(f):
 
 def query_transaction_data():
     results = (
-            db_session.query(transaction_detail_db)
+            db.session.query(transaction_detail_db)
             .join(transaction_detail_db.transaction)   # join to transactions_db
             .join(transaction_detail_db.account)       # join to chart_of_accounts_db
             .filter(transactions_db.user_id == session["user_id"])  # filter on parent transaction's user
@@ -130,7 +126,7 @@ def get_balance_sheet_data():
                 equity.append(accounts)
 
     # taking care accounts that are not in journal to count them in bs
-    accounts_z = db_session.query(chart_of_accounts_db).filter_by(user_id=session["user_id"])
+    accounts_z = db.session.query(chart_of_accounts_db).filter_by(user_id=session["user_id"])
 
     for row in accounts_z:
         if row.type in ('Asset','Liability','Equity') and row.name not in names:
