@@ -7,11 +7,13 @@
 
       <h2 class="text-center text-primary fw-bold mb-4">📘 Journal Transactions</h2>
       <hr>
-      <form action="/transactions/delete_all" method="post" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete all transaction data?');">
-                    <button type="submit" class="btn btn-sm btn-outline-light rounded-pill px-3">
-                      🗑️ Erase all Transactions Data
-                    </button>
-      </form>
+      <div class="text-center">
+        <form action="/transactions/delete_all" method="post" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete all transaction data?');">
+          <button type="submit" class="btn btn-sm btn-outline-light rounded-pill px-3">
+            🗑️ Erase all Transactions Data
+          </button>
+        </form>
+      </div>
 
       {% if transactions %}
         {% for txn in transactions %}

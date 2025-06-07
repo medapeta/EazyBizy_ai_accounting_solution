@@ -1,6 +1,5 @@
 from flask import Flask, flash, redirect, render_template, request, url_for, make_response
 from flask_session import Session as Flasksession
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, func, extract
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -10,7 +9,6 @@ from helper import * #query_transaction_data ,get_profit_loss_data,get_balance_s
 from weasyprint import HTML
 from flask_mail import Mail, Message
 from extension import db # to avoid circular import problem
-from flask_wtf.csrf import CSRFProtect
 
 
 load_dotenv()  # Load from .env file
@@ -20,7 +18,6 @@ app = Flask(__name__)
 
 # ===== Core Configurations =====
 app.secret_key = os.getenv("SECRET_KEY")
-csrf = CSRFProtect(app)
 
 # ===== Database Configuration =====
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///ai-bookeeping.db")
