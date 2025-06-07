@@ -20,7 +20,7 @@ app = Flask(__name__)
 
 # ===== Core Configurations =====
 app.secret_key = os.getenv("SECRET_KEY")
-#csrf = CSRFProtect(app)
+csrf = CSRFProtect(app)
 
 # ===== Database Configuration =====
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///ai-bookeeping.db")
