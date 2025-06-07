@@ -20,9 +20,19 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
 # ===== Database Configuration =====
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")#, "sqlite:///ai-bookeeping.db"
-if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
-    app.config["SQLALCHEMY_DATABASE_URI"] = app.config["SQLALCHEMY_DATABASE_URI"].replace("postgres://", "postgresql://", 1)
+# app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")#, "sqlite:///ai-bookeeping.db"
+# if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
+#     app.config["SQLALCHEMY_DATABASE_URI"] = app.config["SQLALCHEMY_DATABASE_URI"].replace("postgres://", "postgresql://", 1)
+
+# Replace with this
+db_uri = os.getenv("DATABASE_URL")
+if not db_uri:
+    raise RuntimeError("❌ DATABASE_URL not set in environment variables!")
+
+if db_uri.startswith("postgres://"):
+    db_uri = db_uri.replace("postgres://", "postgresql://", 1)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
 
 print("🔗 SQLAlchemy DB URI:", app.config["SQLALCHEMY_DATABASE_URI"])
 
@@ -42,7 +52,6 @@ initialize_database()
 
 from models import *
 
-from models import *
 
 with app.app_context():
     db.create_all()
