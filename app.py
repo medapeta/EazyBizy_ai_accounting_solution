@@ -1,47 +1,58 @@
 from flask import Flask, flash, redirect, render_template, request, session, url_for, make_response
-from flask_session import Session as Flasksession
+from flask_session import Session #as Flasksession
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, func, extract
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import SQLAlchemyError
+# from sqlalchemy.orm import sessionmaker
+# from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
-from models import users_db, transactions_db, transaction_detail_db, chart_of_accounts_db, categories_db
+#from models import users_db, transactions_db, transaction_detail_db, chart_of_accounts_db, categories_db
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 import os
-from collections import defaultdict
 from helper import * #query_transaction_data ,get_profit_loss_data,get_balance_sheet_data , get_ledger_data,show_income_expense_chart, show_cash_chart,ask_deepseek
 from weasyprint import HTML
 from flask_mail import Mail, Message
+#from init_db import engine, Base #this is for deployment purpuses to initialize db tables before request
+from flask_wtf.csrf import CSRFProtect
+
 
 load_dotenv()  # Load from .env file
 
-
 app = Flask(__name__)
+db = SQLAlchemy() # Create db first
+
+
+# ===== Core Configurations =====
 app.secret_key = os.getenv("SECRET_KEY")
+csrf = CSRFProtect(app)
 
+# ===== Database Configuration =====
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///ai-bookeeping.db")
+if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
+    app.config["SQLALCHEMY_DATABASE_URI"] = app.config["SQLALCHEMY_DATABASE_URI"].replace("postgres://", "postgresql://", 1)
 
-# Server-side session config
-app.config["SESSION_TYPE"] = "filesystem"
-app.config["SESSION_PERMANENT"] = False
+# Initialize db
+db.init_app(app)
 
-# Initialize the session extension
-Flasksession(app)
+from models import *
 
-#sqlalchemy db
-engine = create_engine('sqlite:///ai-bookeeping.db')
-sqlSession = sessionmaker(bind=engine)
-db_session = sqlSession()
+# ===== Session Configuration =====
+app.config["SESSION_TYPE"] = "sqlalchemy"
+app.config["SESSION_SQLALCHEMY"] = db  # Link to Flask-SQLAlchemy
+Session(app)
 
-# Mail configuration
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # or your SMTP server
+# ===== Mail Configuration =====
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'petrosmedhanie59@gmail.com'
-app.config['MAIL_PASSWORD'] = 'mowz pukn dupn egdy'   
-app.config['MAIL_DEFAULT_SENDER'] = 'petrosmedhanie59@gmail.com'
-
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
 mail = Mail(app)
 
+# ===== Database Initialization =====
+with app.app_context():
+    db.create_all()  # Creates all tables
 
 @app.route("/")
 def index():
@@ -69,7 +80,7 @@ def login():
         login_password = request.form.get("password")
 
         #check database if such user exists 
-        user_in_db = db_session.query(users_db).filter_by(username=login_username).first()
+        user_in_db = db.session.query(users_db).filter_by(username=login_username).first()
 
         #if exists create a session["username"] and continue
         if user_in_db and check_password_hash(user_in_db.password_hash, login_password):
@@ -116,7 +127,7 @@ def register():
             flash("Password must be greater than 6 characters", "error")
             return redirect("/register")
         # Check if username or business name or email already exists
-        existing_user = db_session.query(users_db).filter(
+        existing_user = db.session.query(users_db).filter(
             (users_db.username == username) | 
             (users_db.bussiness_name == bussiness_name) | 
             (users_db.email == email)).first()
@@ -134,8 +145,8 @@ def register():
             bussiness_name=bussiness_name,
             password_hash=hashed_pw
         )
-        db_session.add(new_user)
-        db_session.commit()
+        db.session.add(new_user)
+        db.session.commit()
         print("New user ID after commit:", new_user.id)
         # Log user in (create session)
         session["user_id"] = new_user.id
@@ -157,7 +168,7 @@ def about():
 @login_required
 def dashboard():
     #business data 
-    user = db_session.query(users_db).filter_by(id=session["user_id"]).first()
+    user = db.session.query(users_db).filter_by(id=session["user_id"]).first()
     business_name = user.bussiness_name
     username = user.username
 
@@ -178,7 +189,7 @@ def dashboard():
     net_worth = total_bs["equity"] 
 
     recent_transactions = (
-        db_session.query(
+        db.session.query(
             transactions_db.date,
             transactions_db.description,
             func.sum(transaction_detail_db.amount).label('amount')
@@ -214,7 +225,7 @@ def dashboard():
 def transactions_list():
     # Get all transactions for the current user
     transactions = (
-        db_session.query(transactions_db)
+        db.session.query(transactions_db)
         .filter_by(user_id=session["user_id"])
         .order_by(transactions_db.date.desc())
         .all()
@@ -224,7 +235,7 @@ def transactions_list():
     transactions_data = []
     for txn in transactions:
         details = (
-            db_session.query(
+            db.session.query(
                 transaction_detail_db,
                 chart_of_accounts_db.name.label("account_name"),
                 categories_db.name.label("category_name")
@@ -259,7 +270,7 @@ def transactions_list():
 @login_required
 def transactions_reset():
     user_id = session.get("user_id")
-    transactions = db_session.query(transactions_db).filter_by(user_id=user_id).all()
+    transactions = db.session.query(transactions_db).filter_by(user_id=user_id).all()
     for trx in transactions:
         if not transactions:
             flash("No transaction found", "danger")
@@ -267,14 +278,14 @@ def transactions_reset():
         
         try:
             # Delete details first
-            db_session.query(transaction_detail_db).filter_by(transaction_id=trx.id).delete()
+            db.session.query(transaction_detail_db).filter_by(transaction_id=trx.id).delete()
 
             # Delete main transaction
-            db_session.delete(trx)
-            db_session.commit()
+            db.session.delete(trx)
+            db.session.commit()
             flash("Transaction deleted successfully.", "success")
         except SQLAlchemyError:
-            db_session.rollback()
+            db.session.rollback()
             flash("An error occurred while deleting the transaction.", "danger")
     
     return redirect(url_for('transactions_list'))
@@ -284,21 +295,21 @@ def transactions_reset():
 def delete_transaction(transaction_id):
     user_id = session.get("user_id")
 
-    transaction = db_session.query(transactions_db).filter_by(id=transaction_id, user_id=user_id).first()
+    transaction = db.session.query(transactions_db).filter_by(id=transaction_id, user_id=user_id).first()
     if not transaction:
         flash("Transaction not found or unauthorized.", "danger")
         return redirect(url_for('transactions_list'))
 
     try:
         # Delete details first
-        db_session.query(transaction_detail_db).filter_by(transaction_id=transaction.id).delete()
+        db.session.query(transaction_detail_db).filter_by(transaction_id=transaction.id).delete()
 
         # Delete main transaction
-        db_session.delete(transaction)
-        db_session.commit()
+        db.session.delete(transaction)
+        db.session.commit()
         flash("Transaction deleted successfully.", "success")
     except SQLAlchemyError:
-        db_session.rollback()
+        db.session.rollback()
         flash("An error occurred while deleting the transaction.", "danger")
 
     return redirect(url_for('transactions_list'))
@@ -309,9 +320,8 @@ def add_transactions():
         #ai response from other func
         ai_response = request.args.get("ai_response")
 
-        accountz = db_session.query(chart_of_accounts_db).all()
-        catetoriz = db_session.query(categories_db).all()
-        #taxz = db_session.query(tax_rates_db).all()
+        accountz = db.session.query(chart_of_accounts_db).all()
+        catetoriz = db.session.query(categories_db).all()
 
 
         if request.method == "POST":
@@ -328,7 +338,7 @@ def add_transactions():
             account_ids = request.form.getlist("account_id[]")
             category_ids = request.form.getlist("category_id[]")
             amounts = request.form.getlist("amount[]")
-            #tax_rate_ids = request.form.getlist("tax_rate_id[]")
+
             d_c = request.form.getlist("d_c[]")
 
             #redirect to add_transactions page if debit!=credit balance
@@ -354,8 +364,8 @@ def add_transactions():
                 description = descriptions,
                 reference_number = reference_number
             )
-            db_session.add(new_transaction)
-            db_session.commit()
+            db.session.add(new_transaction)
+            db.session.commit()
 
             # Get the committed transaction with its ID
             transaction_id_ = new_transaction.id
@@ -368,7 +378,7 @@ def add_transactions():
                     acct_id = int(account_ids[i])
                     amt = float(amounts[i])
                     
-                    check_account_side = db_session.query(chart_of_accounts_db).filter_by(id = acct_id).first()
+                    check_account_side = db.session.query(chart_of_accounts_db).filter_by(id = acct_id).first()
                     # Create transaction line here
                     new_transaction_line = transaction_detail_db(
                         transaction_id = transaction_id_,
@@ -379,8 +389,8 @@ def add_transactions():
                         
                     )
 
-                    db_session.add(new_transaction_line)
-            db_session.commit()
+                    db.session.add(new_transaction_line)
+            db.session.commit()
             flash("Transaction added successfully!", "success")
 
         return render_template("/main/transactions/add_transactions.html",ai_response=ai_response ,accounts=accountz, categories=catetoriz)#tax_rates=taxz
@@ -594,40 +604,40 @@ def settings_accounts():
                 opening_balance=opening_balance
             )
 
-            db_session.add(new_account)
-            db_session.commit()
+            db.session.add(new_account)
+            db.session.commit()
             flash('Account added successfully!', 'success')
             return redirect("/settings/accounts")
 
         except Exception as e:
-            db_session.rollback()
+            db.session.rollback()
             flash(f'Error adding account: {str(e)}', 'danger')
 
-    accounts = db_session.query(chart_of_accounts_db).filter_by(user_id=session["user_id"]).order_by(chart_of_accounts_db.created_at.asc()).all()
+    accounts = db.session.query(chart_of_accounts_db).filter_by(user_id=session["user_id"]).order_by(chart_of_accounts_db.created_at.asc()).all()
 
     return render_template("main/settings/accounts.html", accounts=accounts)
 
 @app.route("/edit_account/<int:account_id>", methods=["POST"])
 @login_required
 def edit_account(account_id):
-    account = db_session.query(chart_of_accounts_db).get(account_id)
+    account = db.session.query(chart_of_accounts_db).get(account_id)
     if account:
         account.name = request.form["name"]
         account.type = request.form["type"]
         account.code = request.form["code"]
         account.opening_balance = request.form["opening_balance"]
         account.is_system_account = "is_system_account" in request.form
-        db_session.commit()
+        db.session.commit()
         flash("Account updated successfully!", "success")
     return redirect(url_for("settings_accounts")) 
 
 @app.route("/delete_account/<int:account_id>", methods=["POST"])
 @login_required
 def delete_account(account_id):
-    account = db_session.query(chart_of_accounts_db).get(account_id)
+    account = db.session.query(chart_of_accounts_db).get(account_id)
     if account:
-        db_session.delete(account)
-        db_session.commit()
+        db.session.delete(account)
+        db.session.commit()
         flash("Account deleted successfully!", "success")
     return redirect(url_for("settings_accounts")) 
 
@@ -654,23 +664,23 @@ def settings_categories():
                 #tax_rate_id=tax_rate_id   
             )
 
-            db_session.add(new_category)
-            db_session.commit()
+            db.session.add(new_category)
+            db.session.commit()
             flash('Category added successfully!', 'success')
             return redirect("/settings/categories")
 
         except Exception as e:
-            db_session.rollback()
+            db.session.rollback()
             flash(f'Error adding account: {str(e)}', 'danger')
 
-    categories_ = db_session.query(categories_db).filter_by(user_id=session["user_id"]).all()
-    #tax_rates_list = db_session.query(tax_rates_db).filter_by(user_id=session["user_id"]).all()
+    categories_ = db.session.query(categories_db).filter_by(user_id=session["user_id"]).all()
+    #tax_rates_list = db.session.query(tax_rates_db).filter_by(user_id=session["user_id"]).all()
     return render_template("main/settings/categories.html",categories=categories_)#,tax_rates_list=tax_rates_list
 
 @app.route("/edit_category/<int:category_id>", methods=["POST"])
 @login_required
 def edit_category(category_id):
-    category = db_session.query(categories_db).get(category_id)
+    category = db.session.query(categories_db).get(category_id)
     if category:
         category.name = request.form["name"]
         category.type = request.form["type"]
@@ -680,30 +690,30 @@ def edit_category(category_id):
         category.parent_category_id = int(parent_id) if parent_id else None
         #category.tax_rate_id = int(tax_rate_id) if tax_rate_id else None
 
-        db_session.commit()
+        db.session.commit()
     return redirect(url_for("settings_categories"))
 
 @app.route("/delete_category/<int:category_id>", methods=["POST"])
 @login_required
 def delete_category(category_id):
-    category = db_session.query(categories_db).get(category_id)
+    category = db.session.query(categories_db).get(category_id)
     if category:
-        db_session.delete(category)
-        db_session.commit()
+        db.session.delete(category)
+        db.session.commit()
         flash("Category deleted successfully!", "success")
     return redirect(url_for("settings_categories")) 
 
 @app.route('/settings/profile', methods=['GET', 'POST'])
 @login_required
 def settings_profile():
-    user = db_session.query(users_db).filter_by(id=session["user_id"]).first()
+    user = db.session.query(users_db).filter_by(id=session["user_id"]).first()
 
     if request.method == 'POST' and user:
         user.username = request.form.get("username")
         user.business_name = request.form.get("business_name")
         user.currency = request.form.get("currency")
         user.fiscal_year = request.form.get("fiscal_year_start")
-        db_session.commit()
+        db.session.commit()
         flash("Profile updated successfully!", "success")
 
     return render_template("main/settings/profile.html", user=user)
@@ -711,9 +721,9 @@ def settings_profile():
 @app.route('/settings/profile/delete', methods=['GET', 'POST'])
 @login_required
 def delete_profile():
-    user = db_session.query(users_db).get(session["user_id"])
-    db_session.delete(user)
-    db_session.commit()
+    user = db.session.query(users_db).get(session["user_id"])
+    db.session.delete(user)
+    db.session.commit()
     session.clear()
     flash("Profile deleted. successfuly", "success")
     return redirect(url_for('index'))
@@ -753,9 +763,9 @@ def report_problem():
 @app.route('/logout')
 def logout():
     session.clear()
-    db_session.close()
+    db.session.close()
     flash("You have logged out", "success")
     return render_template("index.html")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)

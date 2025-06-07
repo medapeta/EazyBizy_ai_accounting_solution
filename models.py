@@ -1,88 +1,75 @@
-from sqlalchemy import (
-    create_engine, Column, Integer, String, Numeric, DateTime, ForeignKey, Boolean
-)
-from sqlalchemy.orm import declarative_base, relationship
+from app import db  # Import the Flask-SQLAlchemy instance
 from datetime import datetime
 
-Base = declarative_base()
-
-class users_db(Base):
+class users_db(db.Model):
     __tablename__ = 'users_db'
 
-    id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True, nullable=False)
-    email = Column(String, unique=True, nullable=False)
-    password_hash = Column(String, nullable=False)
-    bussiness_name = Column(String, unique=True, nullable=False)
-    logo_path = Column(String, nullable=True)
-    currency = Column(String, default='USD')
-    fiscal_year_start = Column(DateTime)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, unique=True, nullable=False)
+    email = db.Column(db.String, unique=True, nullable=False)
+    password_hash = db.Column(db.String, nullable=False)
+    bussiness_name = db.Column(db.String, unique=True, nullable=False)
+    logo_path = db.Column(db.String, nullable=True)
+    currency = db.Column(db.String, default='USD')
+    fiscal_year_start = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    accounts = relationship('chart_of_accounts_db', back_populates='user')
-    categories = relationship('categories_db', back_populates='user')
-    transactions = relationship('transactions_db', back_populates='user')
-    #tax_rates = relationship('tax_rates_db', back_populates='user')
+    accounts = db.relationship('chart_of_accounts_db', back_populates='user')
+    categories = db.relationship('categories_db', back_populates='user')
+    transactions = db.relationship('transactions_db', back_populates='user')
 
-class chart_of_accounts_db(Base):
+class chart_of_accounts_db(db.Model):
     __tablename__ = 'chart_of_accounts_db'
 
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users_db.id'), nullable=False)
-    name = Column(String, nullable=False)
-    type = Column(String, nullable=False)  # e.g. Asset, Liability, etc.
-    normal_side = Column(String, nullable=False) # debit or credit
-    code = Column(String, nullable=True)
-    opening_balance = Column(Numeric(12, 2), default=0.00)
-    is_system_account = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users_db.id'), nullable=False)
+    name = db.Column(db.String, nullable=False)
+    type = db.Column(db.String, nullable=False)
+    normal_side = db.Column(db.String, nullable=False)
+    code = db.Column(db.String, nullable=True)
+    opening_balance = db.Column(db.Numeric(12, 2), default=0.00)
+    is_system_account = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user = relationship('users_db', back_populates='accounts')
-    transaction_lines = relationship("transaction_detail_db", back_populates="account")
+    user = db.relationship('users_db', back_populates='accounts')
+    transaction_lines = db.relationship("transaction_detail_db", back_populates="account")
 
-
-class categories_db(Base):
+class categories_db(db.Model):
     __tablename__ = 'categories_db'
 
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users_db.id'), nullable=False)
-    name = Column(String, nullable=False)
-    type = Column(String, nullable=False)  # Income/Expense/Tax
-    parent_category_id = Column(Integer, ForeignKey('categories_db.id'), nullable=True)
-    #tax_rate_id = Column(Integer, ForeignKey('tax_rates_db.id'), nullable=True)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users_db.id'), nullable=False)
+    name = db.Column(db.String, nullable=False)
+    type = db.Column(db.String, nullable=False)
+    parent_category_id = db.Column(db.Integer, db.ForeignKey('categories_db.id'), nullable=True)
 
-    user = relationship('users_db', back_populates='categories')
-    parent_category = relationship('categories_db', remote_side=[id])
-    transaction_lines = relationship("transaction_detail_db", back_populates="category")
+    user = db.relationship('users_db', back_populates='categories')
+    parent_category = db.relationship('categories_db', remote_side=[id])
+    transaction_lines = db.relationship("transaction_detail_db", back_populates="category")
 
-
-class transactions_db(Base):
+class transactions_db(db.Model):
     __tablename__ = 'transactions_db'
 
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users_db.id'), nullable=False)
-    date = Column(DateTime, default=datetime.utcnow)
-    description = Column(String)
-    reference_number = Column(String, nullable=True)
-    is_archived = Column(Boolean, default=False)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users_db.id'), nullable=False)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+    description = db.Column(db.String)
+    reference_number = db.Column(db.String, nullable=True)
+    is_archived = db.Column(db.Boolean, default=False)
 
-    user = relationship('users_db', back_populates='transactions')
-    details = relationship("transaction_detail_db", back_populates="transaction", cascade="all, delete-orphan")
+    user = db.relationship('users_db', back_populates='transactions')
+    details = db.relationship("transaction_detail_db", back_populates="transaction", cascade="all, delete-orphan")
 
-
-class transaction_detail_db(Base):
+class transaction_detail_db(db.Model):
     __tablename__ = 'transaction_detail_db'
 
-    id = Column(Integer, primary_key=True)
-    transaction_id = Column(Integer, ForeignKey('transactions_db.id'), nullable=False)
-    account_id = Column(Integer, ForeignKey('chart_of_accounts_db.id'), nullable=False)
-    category_id = Column(Integer, ForeignKey('categories_db.id'), nullable=True)
-    amount = Column(Numeric(12, 2), nullable=False)  # Positive = Debit, Negative = Credit
-    #tax_rate_id = Column(Integer, ForeignKey('tax_rates_db.id'), nullable=True)
-    is_debit = Column(Boolean, default=False)
+    id = db.Column(db.Integer, primary_key=True)
+    transaction_id = db.Column(db.Integer, db.ForeignKey('transactions_db.id'), nullable=False)
+    account_id = db.Column(db.Integer, db.ForeignKey('chart_of_accounts_db.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories_db.id'), nullable=True)
+    amount = db.Column(db.Numeric(12, 2), nullable=False)
+    is_debit = db.Column(db.Boolean, default=False)
     
-    # 🔗 Relationships
-    transaction = relationship("transactions_db", back_populates="details")
-    account = relationship("chart_of_accounts_db", back_populates="transaction_lines")
-    category = relationship("categories_db", back_populates="transaction_lines")
-    #tax_rate = relationship("tax_rates_db", back_populates="transaction_lines")
+    transaction = db.relationship("transactions_db", back_populates="details")
+    account = db.relationship("chart_of_accounts_db", back_populates="transaction_lines")
+    category = db.relationship("categories_db", back_populates="transaction_lines")
