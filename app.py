@@ -1,6 +1,6 @@
 from flask import Flask, flash, redirect, render_template, request, url_for, make_response
 from flask_session import Session as Flasksession
-from sqlalchemy import create_engine, func, extract
+from sqlalchemy import create_engine, func, extract, inspect
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
@@ -27,6 +27,17 @@ if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
 # Initialize db
 db.init_app(app)
 
+
+# Auto-create tables if not already there
+def initialize_database():
+    with app.app_context():
+        inspector = inspect(db.engine)
+        if not inspector.get_table_names():
+            db.create_all()
+            print("✅ Database initialized.")
+
+initialize_database()
+
 from models import *
 
 app.config["SESSION_TYPE"] = "sqlalchemy"
@@ -44,9 +55,6 @@ app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
 mail = Mail(app)
 
-# ===== Database Initialization =====
-with app.app_context():
-    db.create_all()  # Creates all tables
 
 @app.route("/")
 def index():
