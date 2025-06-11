@@ -1,7 +1,7 @@
 from flask import Flask, flash, redirect, render_template, request, session, url_for, jsonify, make_response
 from flask_session import Session
 from sqlalchemy import create_engine, func, extract
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker,joinedload
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from models import users_db, transactions_db, transaction_detail_db, chart_of_accounts_db, categories_db
@@ -133,6 +133,8 @@ def get_balance_sheet_data():
     accounts_z = db_session.query(chart_of_accounts_db).filter_by(user_id=session["user_id"])
 
     for row in accounts_z:
+        
+
         if row.type in ('Asset','Liability','Equity') and row.name not in names:
             accounts = {}
             accounts["account_x"] = row
@@ -143,9 +145,9 @@ def get_balance_sheet_data():
                 liability.append(accounts)
             if row.type == 'Equity':
                 equity.append(accounts)
+       
 
     # taking total off all asset, liability, capital
-    
     total_asset = []
     total_liability = []
     total_equity = []
@@ -196,7 +198,7 @@ def get_ledger_data():
                 else:
                     balances.append(last_balance + line.amount)
                     balance_dates.append(line.transaction.date)
-        if account.name == 'cash':
+        if account.name.lower() == 'cash':
             for_cash_tracking["balances"] = balances
             for_cash_tracking["dates"] = balance_dates
          
@@ -230,7 +232,6 @@ def show_cash_chart():
         dates.append(formatted)
 
     return balances, dates
-
 
 
 def ask_deepseek(user_message,system_c):
@@ -268,8 +269,6 @@ def ask_deepseek(user_message,system_c):
             print("Response content:", e.response.text)
         return "Sorry, something went wrong with the AI."
 
-
-
 # formating profit loss statement for ai analysis
 def format_pl_data():
     income, expense, total_ie = get_profit_loss_data()
@@ -290,15 +289,91 @@ def format_pl_data():
     return "\n".join(lines)
 
 def format_balance_sheet_data_for_ai():
-    # Fetch balance sheet and profit/loss data
-    asset, liability, equity, total_bs = get_balance_sheet_data()
-    *_, total_ie = get_profit_loss_data()  # Extract income/expense totals
-    
-    # Calculate net profit and adjusted equity
-    net_income = total_ie["incomes"] - total_ie["expenses"]
-    total_equity_updated = total_bs["equity"] + net_income
-    total_liability_equity = total_equity_updated + total_bs["liabilities"]
+    from decimal import Decimal
 
+    grouped_lines = query_transaction_data()
+
+    all_accounts = db_session.query(chart_of_accounts_db)\
+        .filter_by(user_id=session["user_id"])\
+        .options(joinedload(chart_of_accounts_db.transaction_lines))\
+        .order_by(chart_of_accounts_db.type, chart_of_accounts_db.name)\
+        .all()
+    transactions_by_account = {acct.id: txns for acct, txns in grouped_lines.items()}
+
+    assets, liabilities, equity = [], [], []
+    total_assets = total_liabilities = total_equity = Decimal("0.00")
+
+    # Compute balances for all accounts
+    for acct in all_accounts:
+        balance = acct.opening_balance or Decimal("0.00")
+        txns = transactions_by_account.get(acct.id, [])
+        for txn in txns:
+            if acct.normal_side == 'debit':
+                balance += txn.amount if txn.is_debit else -txn.amount
+            else:
+                balance += -txn.amount if txn.is_debit else txn.amount
+
+        entry = {
+            "account_x": acct,
+            "account_total": balance
+        }
+
+        if acct.type == 'Asset':
+            assets.append(entry)
+            total_assets += balance
+        elif acct.type == 'Liability':
+            liabilities.append(entry)
+            total_liabilities += balance
+        elif acct.type == 'Equity':
+            equity.append(entry)
+            total_equity += balance  # This is just raw equity
+
+    # Add Net Income to Equity
+    *_, total_ie = get_profit_loss_data()
+    net_income = Decimal(total_ie["net"])
+    equity.append({
+        "account_x": chart_of_accounts_db(
+            name="Current Year Earnings" if net_income >= 0 else "Current Period Loss",
+            code="399",
+            type="Equity",
+            normal_side="credit" if net_income >= 0 else "debit",
+            opening_balance=0,
+            user_id=session["user_id"]
+        ),
+        "account_total": abs(net_income)
+    })
+    total_equity += net_income
+
+    # Add Owner's Capital to Equity
+    capital_account_name = f"{session.get('bussiness_name', 'Business')} Capital"
+    capital_balance = Decimal("0.00")
+    for acct in all_accounts:
+        if acct.type == 'Equity' and capital_account_name in acct.name:
+            capital_balance = acct.opening_balance or Decimal("0.00")
+            txns = transactions_by_account.get(acct.id, [])
+            for txn in txns:
+                if acct.normal_side == 'debit':
+                    capital_balance += txn.amount if txn.is_debit else -txn.amount
+                else:
+                    capital_balance += -txn.amount if txn.is_debit else txn.amount
+            break
+
+    equity.append({
+        "account_x": chart_of_accounts_db(
+            name=capital_account_name,
+            code="300",
+            type="Equity",
+            normal_side="credit",
+            opening_balance=0,
+            user_id=session["user_id"]
+        ),
+        "account_total": capital_balance
+    })
+    total_equity += capital_balance
+
+    total_liability_equity = total_liabilities + total_equity
+
+    # Format output for AI
     def format_accounts(label, accounts_list):
         formatted_lines = [f"\n**{label.upper()}**"]
         for entry in accounts_list:
@@ -307,26 +382,22 @@ def format_balance_sheet_data_for_ai():
             formatted_lines.append(f"- **{acc.name}** ({acc.type}): ${total:,.2f}")
         return "\n".join(formatted_lines)
 
-    # Generate the formatted output
-    sections = [
-        "**FINANCIAL STATEMENT SUMMARY**",
+    summary = [
+        "**BALANCE SHEET SUMMARY**",
         "============================",
-        format_accounts("Assets", asset),
-        format_accounts("Liabilities", liability),
+        format_accounts("Assets", assets),
+        format_accounts("Liabilities", liabilities),
         format_accounts("Equity", equity),
         "\n**PROFIT & LOSS IMPACT**",
-        f"- **Total Revenues:** ${total_ie['incomes']:,.2f}",
-        f"- **Total Expenses:** ${total_ie['expenses']:,.2f}",
         f"- **Net Income:** ${net_income:,.2f}",
-        "\n**ADJUSTED TOTALS**",
-        f"- **Total Assets:** ${total_bs['assets']:,.2f}",
-        f"- **Total Liabilities:** ${total_bs['liabilities']:,.2f}",
-        f"- **Total Equity (After P&L):** ${total_equity_updated:,.2f}",
+        "\n**SUMMARY TOTALS**",
+        f"- **Total Assets:** ${total_assets:,.2f}",
+        f"- **Total Liabilities:** ${total_liabilities:,.2f}",
+        f"- **Total Equity (After Net Income & Capital):** ${total_equity:,.2f}",
         f"- **Liabilities + Equity:** ${total_liability_equity:,.2f}",
         "\n**ACCOUNTING EQUATION CHECK**",
-        f"Assets = Liabilities + Equity → "
-        f"${total_bs['assets']:,.2f} = ${total_liability_equity:,.2f} "
-        f"(**{'Balanced' if abs(total_bs['assets'] - total_liability_equity) < 0.01 else 'Imbalanced!'}**)"
+        f"Assets = Liabilities + Equity → ${total_assets:,.2f} = ${total_liability_equity:,.2f} "
+        f"(**{'Balanced' if abs(total_assets - total_liability_equity) < 0.01 else 'Imbalanced!'}**)"
     ]
 
-    return "\n".join(sections)
+    return "\n".join(summary)

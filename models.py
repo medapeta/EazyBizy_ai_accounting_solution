@@ -14,15 +14,14 @@ class users_db(Base):
     email = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
     bussiness_name = Column(String, unique=True, nullable=False)
-    logo_path = Column(String, nullable=True)
     currency = Column(String, default='USD')
     fiscal_year_start = Column(DateTime)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    accounts = relationship('chart_of_accounts_db', back_populates='user')
-    categories = relationship('categories_db', back_populates='user')
-    transactions = relationship('transactions_db', back_populates='user')
-    #tax_rates = relationship('tax_rates_db', back_populates='user')
+    accounts = relationship('chart_of_accounts_db', back_populates='user',cascade="all, delete-orphan")
+    categories = relationship('categories_db', back_populates='user',cascade="all, delete-orphan")
+    transactions = relationship('transactions_db', back_populates='user',cascade="all, delete-orphan")
+
 
 class chart_of_accounts_db(Base):
     __tablename__ = 'chart_of_accounts_db'

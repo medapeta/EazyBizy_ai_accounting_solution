@@ -7,12 +7,12 @@
 
       <h2 class="text-center text-primary fw-bold mb-4">📘 Journal Transactions</h2>
       <hr>
-      <form action="/transactions/delete_all" method="post" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete all transaction data?');">
+      <div class="text-center"><form action="/transactions/delete_all" method="post" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete all transaction data?');">
                     <button type="submit" class="btn btn-sm btn-outline-light rounded-pill px-3">
                       🗑️ Erase all Transactions Data
                     </button>
       </form>
-
+    </div>
       {% if transactions %}
         {% for txn in transactions %}
           <div class="card mb-5 rounded-4 shadow border-0" style="background-color: #1e1e1e;">
@@ -63,7 +63,7 @@
                         </td>
                         <td class="text-end text-danger fw-semibold">
                           {% if not detail.is_debit %}
-                            {{ '{:,.2f}'.format(-detail.amount) }}
+                            {{ '{:,.2f}'.format(detail.amount) }}
                           {% endif %}
                         </td>
                         <td class="text-muted">{{ detail.notes or '' }}</td>
