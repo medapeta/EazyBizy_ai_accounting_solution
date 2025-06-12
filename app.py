@@ -12,6 +12,7 @@ from collections import defaultdict
 from helper import * #query_transaction_data ,get_profit_loss_data,get_balance_sheet_data , get_ledger_data,show_income_expense_chart, show_cash_chart,ask_deepseek
 from weasyprint import HTML
 from flask_mail import Mail, Message
+from collections import defaultdict, OrderedDict
 
 load_dotenv()  # Load from .env file
 
@@ -156,9 +157,6 @@ def register():
     # GET request
     return render_template("register.html",current_year=datetime.now().year)
 
-# @app.route("/help")
-# def help():
-#     return render_template("main/help.html")
 
 @app.route("/about")
 def about():
@@ -180,11 +178,7 @@ def dashboard():
 
 
     asset,liability,equity,total_bs = get_balance_sheet_data()
-    cash_on_hand = 0
-    #cash_on_hand
-    for acc in asset:
-        if acc["account_x"].name.lower() == 'cash':
-            cash_on_hand = acc["account_total"] if acc["account_total"] is not None else 0
+
     #net_worth/current capital
     net_worth = total_bs["equity"] 
 
@@ -214,7 +208,7 @@ def dashboard():
     #chart data 
     i,e = show_income_expense_chart()
     cash_balances, cash_dates = show_cash_chart()
-
+    cash_on_hand = cash_balances[-1]
     return render_template("main/dashboard.html",username=username,bussiness_name=bussiness_name,formatted_date=formatted_date, income=income, expense=expense, net=net, 
                            cash_on_hand=cash_on_hand, net_worth=net_worth,
                            recent_transactions=recent_transactions,i=i,e=e,cash_balances=cash_balances, cash_dates=cash_dates)
@@ -423,9 +417,8 @@ def report_ledger_view():
 
     return render_template("main/reports/ledger_view.html",accountz=accountz)
 
-from collections import defaultdict, OrderedDict
-from datetime import datetime
-from flask import jsonify
+
+
 @app.route("/reports/trial_balance")
 @login_required
 def report_trial_balance():
