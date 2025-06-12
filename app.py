@@ -240,10 +240,9 @@ def transactions_list():
 
 
         txn_details = []
-        for detail, account_name, category_name in details:
+        for detail, account_name  in details:
             txn_details.append({
                 'account_name': account_name,
-                'category_name': category_name,
                 'amount': float(detail.amount),
                 'is_debit': detail.is_debit,
                 
