@@ -14,7 +14,6 @@ class users_db(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     accounts = db.relationship('chart_of_accounts_db', back_populates='user',cascade="all, delete-orphan")
-    categories = db.relationship('categories_db', back_populates='user',cascade="all, delete-orphan")
     transactions = db.relationship('transactions_db', back_populates='user',cascade="all, delete-orphan")
 
 class chart_of_accounts_db(db.Model):
@@ -32,18 +31,6 @@ class chart_of_accounts_db(db.Model):
     user = db.relationship('users_db', back_populates='accounts')
     transaction_lines = db.relationship("transaction_detail_db", back_populates="account")
 
-class categories_db(db.Model):
-    __tablename__ = 'categories_db'
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users_db.id'), nullable=False)
-    name = db.Column(db.String, nullable=False)
-    type = db.Column(db.String, nullable=False)
-    parent_category_id = db.Column(db.Integer, db.ForeignKey('categories_db.id'), nullable=True)
-
-    user = db.relationship('users_db', back_populates='categories')
-    parent_category = db.relationship('categories_db', remote_side=[id])
-    transaction_lines = db.relationship("transaction_detail_db", back_populates="category")
 
 class transactions_db(db.Model):
     __tablename__ = 'transactions_db'
@@ -64,10 +51,8 @@ class transaction_detail_db(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     transaction_id = db.Column(db.Integer, db.ForeignKey('transactions_db.id'), nullable=False)
     account_id = db.Column(db.Integer, db.ForeignKey('chart_of_accounts_db.id'), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey('categories_db.id'), nullable=True)
     amount = db.Column(db.Numeric(12, 2), nullable=False)
     is_debit = db.Column(db.Boolean, default=False)
     
     transaction = db.relationship("transactions_db", back_populates="details")
     account = db.relationship("chart_of_accounts_db", back_populates="transaction_lines")
-    category = db.relationship("categories_db", back_populates="transaction_lines")

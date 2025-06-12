@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, func, extract
 from sqlalchemy.orm import sessionmaker,joinedload
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
-from models import * #users_db, transactions_db, transaction_detail_db, chart_of_accounts_db, categories_db
+from models import * #users_db, transactions_db, transaction_detail_db, chart_of_accounts_db
 from dotenv import load_dotenv
 import os
 from collections import defaultdict
@@ -96,7 +96,7 @@ def get_balance_sheet_data():
     equity = []
     
     names = []
-    group_accounts =query_transaction_data()
+    group_accounts = query_transaction_data()
 
     for acct, trxs in group_accounts.items():
         if acct.type in ('Asset','Liability','Equity'):
@@ -129,7 +129,6 @@ def get_balance_sheet_data():
     accounts_z = db.session.query(chart_of_accounts_db).filter_by(user_id=session["user_id"])
 
     for row in accounts_z:
-        
 
         if row.type in ('Asset','Liability','Equity') and row.name not in names:
             accounts = {}

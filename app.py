@@ -4,6 +4,7 @@ from sqlalchemy import create_engine, func, extract
 from sqlalchemy.orm import sessionmaker,joinedload
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from datetime import datetime
+from models import * #users_db, transactions_db, transaction_detail_db, chart_of_accounts_db
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 import os
@@ -237,16 +238,15 @@ def transactions_list():
     transactions_data = []
     for txn in transactions:
         details = (
-            db.session.query(
-                transaction_detail_db,
-                chart_of_accounts_db.name.label("account_name"),
-                categories_db.name.label("category_name")
-            )
-            .join(chart_of_accounts_db, transaction_detail_db.account_id == chart_of_accounts_db.id)
-            .outerjoin(categories_db, transaction_detail_db.category_id == categories_db.id)
-            .filter(transaction_detail_db.transaction_id == txn.id)
-            .all()
-        )
+                db.session.query(
+                    transaction_detail_db,
+                    chart_of_accounts_db.name.label("account_name")
+                )
+                .join(chart_of_accounts_db, transaction_detail_db.account_id == chart_of_accounts_db.id)
+                .filter(transaction_detail_db.transaction_id == txn.id)
+                .all()
+                )
+
 
         txn_details = []
         for detail, account_name, category_name in details:
@@ -323,7 +323,7 @@ def add_transactions():
         ai_response = request.args.get("ai_response")
 
         accountz = db.session.query(chart_of_accounts_db).filter_by(user_id = session["user_id"]).all()
-        
+     
 
 
         if request.method == "POST":
@@ -395,7 +395,7 @@ def add_transactions():
             db.session.commit()
             flash("Transaction added successfully!", "success")
 
-        return render_template("/main/transactions/add_transactions.html",ai_response=ai_response ,accounts=accountz)#, categories=catetoriztax_rates=taxz
+        return render_template("/main/transactions/add_transactions.html",ai_response=ai_response ,accounts=accountz)
 
 #deepseek ai help using their free api
 @app.route("/transactions/add_transactions/ai_help", methods=["POST","GET"])
@@ -637,7 +637,7 @@ def ai_balance_sheet_analysis():
                     - Headings (<h5>, <strong>)
                     - Bullet points (<ul>, <li>)
                     - Paragraphs (<p>)
-                    - Bold text (<strong>) for key figures or categories
+                    - Bold text (<strong>) for key figures 
 
                     Include in your analysis:
                     - Overview of Assets, Liabilities, and Equity
@@ -826,63 +826,6 @@ def delete_account(account_id):
         flash("Account deleted successfully!", "success")
     return redirect(url_for("settings_accounts")) 
 
-@app.route("/settings/categories", methods=['GET', 'POST'])
-@login_required
-def settings_categories():
-    if request.method == 'POST':
-        try:
-            name = request.form['name']
-            type_ = request.form['type']
-            parent_id = request.form.get('parent') or None
-            
-
-            # Optional: Convert to int if needed
-            parent_category_id = parent_id if parent_id else None
-           
-
-            # Now you can use parent_category_id and tax_rate_id when creating the new category
-            new_category = categories_db(
-                user_id= session["user_id"],
-                name=name,
-                type=type_,
-                parent_category_id=parent_category_id,
-                 
-            )
-
-            db.session.add(new_category)
-            db.session.commit()
-            flash('Category added successfully!', 'success')
-            return redirect("/settings/categories")
-
-        except Exception as e:
-            db.session.rollback()
-            flash(f'Error adding account: {str(e)}', 'danger')
-
-    categories_ = db.session.query(categories_db).filter_by(user_id=session["user_id"]).all()
-    return render_template("main/settings/categories.html",categories=categories_)#,tax_rates_list=tax_rates_list
-
-@app.route("/edit_category/<int:category_id>", methods=["POST"])
-@login_required
-def edit_category(category_id):
-    category = db.session.query(categories_db).get(category_id)
-    if category:
-        category.name = request.form["name"]
-        category.type = request.form["type"]
-        parent_id = request.form.get("parent_category_id")
-        category.parent_category_id = int(parent_id) if parent_id else None
-
-        db.session.commit()
-    return redirect(url_for("settings_categories"))
-
-@app.route("/delete_category/<int:category_id>", methods=["POST"])
-@login_required
-def delete_category(category_id):
-    category = db.session.query(categories_db).get(category_id)
-    if category:
-        db.session.delete(category)
-        db.session.commit()
-        flash("Category deleted successfully!", "success")
-    return redirect(url_for("settings_categories")) 
 
 @app.route('/settings/profile', methods=['GET', 'POST'])
 @login_required
