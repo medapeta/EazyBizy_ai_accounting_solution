@@ -9,16 +9,17 @@
   <link rel="alternate icon" href="{{ url_for('static', filename='main_icon/favicon.ico') }}" type="image/x-icon">
   <style>
     :root {
-      --sidebar-bg: #1e1e1e;
-      --sidebar-active: #2d4739;
-      --sidebar-hover: #232323;
-      --content-bg: #1a1a1a;
-      --navbar-bg: #000000;
-      --text-light: #f8f9fa;
-      --text-muted: #adb5bd;
-      --border-color: #343a40;
-      --primary-accent: #34d399;
-    }
+  --sidebar-bg: #0b1f2a;         /* Deep navy-blue background */
+  --sidebar-active: #548dbf;     /* Vivid but classy blue accent */
+  --sidebar-hover: #123247;      /* Slightly lighter for hover effect */
+  --content-bg: #0f2633;         /* Subtle bluish dark content area */
+  --navbar-bg: #0a1922;          /* Very dark blue for the navbar */
+  --text-light: #e9f1f7;         /* Soft white-blue for high contrast */
+  --text-muted: #a6b3c2;         /* Muted light blue-gray for subtle text */
+  --border-color: #1e3a4c;       /* Border with a cool dark blue tone */
+  --primary-accent: #339af0;     /* Clean sky blue accent (buttons/icons) */
+}
+
 
     html, body {
       height: 100%;
@@ -857,7 +858,7 @@
         {% if messages %}
           <div class="flashes container mt-3">
             {% for category, message in messages %}
-              <div class="alert alert-{{ category }} alert-dismissible fade show flash-text" style="background-color: rgb(168, 236, 168);" role="alert">
+              <div class="alert alert-{{ category }} alert-dismissible fade show flash-text" style="background-color: rgb(168, 223, 236);" role="alert">
                 {{ message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
