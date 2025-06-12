@@ -906,10 +906,9 @@ def settings_profile():
 def delete_profile():
     user_id = session["user_id"]
 
-    # Load user along with their accounts, categories, and transactions
+    # Load user along with their accounts and transactions
     user = db.session.query(users_db).options(
         joinedload(users_db.accounts),
-        joinedload(users_db.categories),
         joinedload(users_db.transactions)
     ).get(user_id)
 
