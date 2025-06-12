@@ -1,6 +1,8 @@
 from flask import Flask, flash, redirect, render_template, request, url_for, make_response
 from flask_session import Session as Flasksession
-from sqlalchemy import create_engine, func, extract, inspect
+from sqlalchemy import create_engine, func, extract
+from sqlalchemy.orm import sessionmaker,joinedload
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
@@ -77,6 +79,7 @@ def login():
         #if exists create a session["username"] and continue
         if user_in_db and check_password_hash(user_in_db.password_hash, login_password):
             session["user_id"] = user_in_db.id
+            session["bussiness_name"] = user_in_db.bussiness_name
             flash(f'Wellcome back {user_in_db.username} you are logged in!', "success")
             return redirect("/dashboard")
         
@@ -139,18 +142,29 @@ def register():
         )
         db.session.add(new_user)
         db.session.commit()
-        print("New user ID after commit:", new_user.id)
+       
         # Log user in (create session)
         session["user_id"] = new_user.id
+        session["bussiness_name"] = new_user.bussiness_name
+        plant_capital = chart_of_accounts_db(
+                user_id= session["user_id"],
+                name = session['bussiness_name'] + "'s capital",
+                type='equity',
+                normal_side = 'credit',
+                code=305,
+                opening_balance=0
+        )
+        db.session.add(plant_capital)
+        db.session.commit()
         flash(f"Welcome {username}, your account has been created!", "success")
         return redirect("/dashboard")
 
     # GET request
     return render_template("register.html",current_year=datetime.now().year)
 
-@app.route("/help")
-def help():
-    return render_template("main/help.html")
+# @app.route("/help")
+# def help():
+#     return render_template("main/help.html")
 
 @app.route("/about")
 def about():
@@ -161,7 +175,7 @@ def about():
 def dashboard():
     #business data 
     user = db.session.query(users_db).filter_by(id=session["user_id"]).first()
-    business_name = user.bussiness_name
+    bussiness_name = user.bussiness_name
     username = user.username
 
 
@@ -175,7 +189,7 @@ def dashboard():
     cash_on_hand = 0
     #cash_on_hand
     for acc in asset:
-        if acc["account_x"].name == 'cash':
+        if acc["account_x"].name.lower() == 'cash':
             cash_on_hand = acc["account_total"] if acc["account_total"] is not None else 0
     #net_worth/current capital
     net_worth = total_bs["equity"] 
@@ -207,7 +221,7 @@ def dashboard():
     i,e = show_income_expense_chart()
     cash_balances, cash_dates = show_cash_chart()
 
-    return render_template("main/dashboard.html",username=username,business_name=business_name,formatted_date=formatted_date, income=income, expense=expense, net=net, 
+    return render_template("main/dashboard.html",username=username,bussiness_name=bussiness_name,formatted_date=formatted_date, income=income, expense=expense, net=net, 
                            cash_on_hand=cash_on_hand, net_worth=net_worth,
                            recent_transactions=recent_transactions,i=i,e=e,cash_balances=cash_balances, cash_dates=cash_dates)
 
@@ -312,8 +326,8 @@ def add_transactions():
         #ai response from other func
         ai_response = request.args.get("ai_response")
 
-        accountz = db.session.query(chart_of_accounts_db).all()
-        catetoriz = db.session.query(categories_db).all()
+        accountz = db.session.query(chart_of_accounts_db).filter_by(user_id = session["user_id"]).all()
+        
 
 
         if request.method == "POST":
@@ -385,7 +399,7 @@ def add_transactions():
             db.session.commit()
             flash("Transaction added successfully!", "success")
 
-        return render_template("/main/transactions/add_transactions.html",ai_response=ai_response ,accounts=accountz, categories=catetoriz)#tax_rates=taxz
+        return render_template("/main/transactions/add_transactions.html",ai_response=ai_response ,accounts=accountz)#, categories=catetoriztax_rates=taxz
 
 #deepseek ai help using their free api
 @app.route("/transactions/add_transactions/ai_help", methods=["POST","GET"])
@@ -414,47 +428,73 @@ def report_ledger_view():
 
     return render_template("main/reports/ledger_view.html",accountz=accountz)
 
+from collections import defaultdict, OrderedDict
+from datetime import datetime
+from flask import jsonify
 @app.route("/reports/trial_balance")
 @login_required
 def report_trial_balance():
+    # Custom labels and ordering
+    type_order = ['asset', 'liability', 'equity', 'revenue', 'expense']
+    type_labels = {
+        'asset': 'A - Assets',
+        'liability': 'L - Liabilities',
+        'equity': 'EQ - Equity',
+        'revenue': 'R - Revenue',
+        'expense': 'EX - Expenses',
+    }
 
-    accountz = []
+    # Get all accounts for the user
+    all_accounts = db.session.query(chart_of_accounts_db)\
+        .filter_by(user_id=session["user_id"])\
+        .options(joinedload(chart_of_accounts_db.transaction_lines))\
+        .order_by(chart_of_accounts_db.type, chart_of_accounts_db.name)\
+        .all()
 
-    group_accounts = query_transaction_data()
+    grouped_accounts_temp = defaultdict(list)
+    total_dc = {"debits": 0, "credits": 0}
 
-    for acct, trxs in group_accounts.items():
-        accounts = {}
-        accounts["account_x"] = acct # we need the name, type , normal_side and code of the account
+    # Loop through each account
+    for account in all_accounts:
+        balance = account.opening_balance or 0
 
-        #now let's grap the account totals
-        total = []
-        for transaction in trxs:
-            if acct.normal_side == "debit":
-                if transaction.is_debit:
-                    total.append(transaction.amount)
-                else: #if the transaction is credited while normal_side being debit
-                    total.append(-(transaction.amount))
-            elif acct.normal_side == "credit":
-                if transaction.is_debit: #if the transaction is credited while normal_side being debit
-                    total.append(-(transaction.amount))
-                else: 
-                    total.append(transaction.amount)
-        accounts["account_total"] = sum(total)
-        accountz.append(accounts)
+        # Add up transaction effects
+        for line in account.transaction_lines:
+            if line.transaction.user_id != session["user_id"]:
+                continue  # Skip unrelated
+            if account.normal_side == 'debit':
+                balance += line.amount if line.is_debit else -line.amount
+            else:
+                balance += -line.amount if line.is_debit else line.amount
 
+        grouped_accounts_temp[account.type.lower()].append({
+            "account_x": account,
+            "account_total": balance,
+            "lines": account.transaction_lines
+        })
 
-    # taking total off all debits and total credits
-    total_dc = {}
-    total_debits = []
-    total_credits = []
-    for acc in accountz:
-        if acc["account_x"].normal_side == "debit":
-            total_debits.append(acc["account_total"])
+        # Update totals
+        if account.normal_side == "debit":
+            total_dc["debits"] += balance
         else:
-            total_credits.append(acc["account_total"])
-    total_dc["debits"] = sum(total_debits)
-    total_dc["credits"] = sum(total_credits)
-    return render_template("main/reports/trial_balance.html",accountz=accountz,total_dc=total_dc)
+            total_dc["credits"] += balance
+
+    # Sort into custom order
+    grouped_accounts = OrderedDict()
+    for t in type_order:
+        if t in grouped_accounts_temp:
+            grouped_accounts[type_labels[t]] = grouped_accounts_temp[t]
+
+    total_dc["balanced"] = abs(total_dc["debits"] - total_dc["credits"]) < 0.01
+
+    return render_template(
+        "main/reports/trial_balance.html",
+        grouped_accounts=grouped_accounts,
+        total_dc=total_dc,
+        current_date=datetime.now()
+    )
+
+
 
 @app.route("/reports/profit_loss")
 @login_required
@@ -513,12 +553,80 @@ def ai_profit_loss_analysis():
 @app.route("/reports/balance_sheet")
 @login_required
 def report_balance_sheet():
-    asset,liability,equity,total_bs = get_balance_sheet_data()
-    *_,total_ie = get_profit_loss_data()
-    net = total_ie["incomes"] - total_ie["expenses"]
-    total_equity = total_bs["equity"] + net
-    total_liability_equity = total_equity  + total_bs["liabilities"]
-    return render_template("main/reports/balance_sheet.html", total_bs=total_bs,assets=asset,liabilities=liability,equity=equity,net=net,total_equity=total_equity,total_liability_equity=total_liability_equity)
+    grouped_lines = query_transaction_data()
+
+    # Calculate Net Income/Loss
+    *_, total_ie = get_profit_loss_data()
+    net_income = total_ie["net"]
+
+    # Get all accounts for the current user
+    all_accounts = db.session.query(chart_of_accounts_db)\
+        .filter_by(user_id=session["user_id"])\
+        .options(joinedload(chart_of_accounts_db.transaction_lines))\
+        .order_by(chart_of_accounts_db.type, chart_of_accounts_db.name)\
+        .all()
+    # Prepare dict of transactions for quick lookup by account id
+    transactions_by_account = {account.id: txns for account, txns in grouped_lines.items()}
+
+    assets = []
+    liabilities = []
+    equity = []
+
+    total_assets = 0
+    total_liabilities = 0
+    total_equity = 0
+
+    for account in all_accounts:
+        balance = account.opening_balance
+
+        # Add transaction amounts if exist
+        txns = transactions_by_account.get(account.id, [])
+        for txn in txns:
+            if account.normal_side == 'debit':
+                balance += txn.amount if txn.is_debit else -txn.amount
+            else:
+                balance += -txn.amount if txn.is_debit else txn.amount
+
+        entry = {
+            "account_x": account,
+            "account_total": balance
+        }
+
+        atype = account.type.lower()
+        if atype == "asset":
+            assets.append(entry)
+            total_assets += balance
+        elif atype == "liability":
+            liabilities.append(entry)
+            total_liabilities += balance
+        elif atype == "equity":
+            equity.append(entry)
+            total_equity += balance
+
+    # Add net income/loss
+    equity.append({
+        "account_x": {
+            "name": "Current Period Earnings" if net_income >= 0 else "Current Period Loss",
+            "type": "Equity",
+            "normal_side": "credit" if net_income >= 0 else "debit"
+        },
+        "account_total": abs(net_income)
+    })
+    total_equity += net_income
+
+    total_liability_equity = total_liabilities + total_equity
+
+    return render_template(
+        "main/reports/balance_sheet.html",
+        assets=assets,
+        liabilities=liabilities,
+        equity=equity,
+        total_assets=total_assets,
+        total_liabilities=total_liabilities,
+        total_equity=total_equity,
+        total_liability_equity=total_liability_equity,
+        is_balanced=abs(total_assets - total_liability_equity) < 0.01
+    )
 
 #deepseek ai analysis using their free api
 @app.route("/reports/balance_sheet/ai_analysis", methods=["POST","GET"])
@@ -555,19 +663,109 @@ def ai_balance_sheet_analysis():
 @app.route("/reports/pdf/balance_sheet")
 @login_required
 def print_balance_sheet():
-    asset,liability,equity,total_bs = get_balance_sheet_data()
-    *_,total_ie = get_profit_loss_data()
-    net = total_ie["incomes"] - total_ie["expenses"]
-    total_equity = total_bs["equity"] + net
-    total_liability_equity = total_equity  + total_bs["liabilities"]
-    rendered_html =render_template("main/reports/pdf/balance_sheet.html", total_bs=total_bs,assets=asset,liabilities=liability,equity=equity,net=net,total_equity=total_equity,total_liability_equity=total_liability_equity)
+    grouped_lines = query_transaction_data()
+    all_accounts = db.session.query(chart_of_accounts_db)\
+        .filter_by(user_id=session["user_id"])\
+        .options(joinedload(chart_of_accounts_db.transaction_lines))\
+        .order_by(chart_of_accounts_db.type, chart_of_accounts_db.name)\
+        .all()
+    transactions_by_account = {account.id: txns for account, txns in grouped_lines.items()}
+
+    assets, liabilities, equity = [], [], []
+    total_assets = total_liabilities = total_equity = 0
+
+    for account in all_accounts:
+        balance = account.opening_balance
+        txns = transactions_by_account.get(account.id, [])
+        for txn in txns:
+            if account.normal_side == 'debit':
+                balance += txn.amount if txn.is_debit else -txn.amount
+            else:
+                balance += -txn.amount if txn.is_debit else txn.amount
+
+        entry = {"account_x": account, "account_total": balance}
+        atype = account.type.lower()
+
+        if atype == 'asset':
+            assets.append(entry)
+            total_assets += balance
+        elif atype == 'liability':
+            liabilities.append(entry)
+            total_liabilities += balance
+        elif atype == 'equity':
+            equity.append(entry)
+            total_equity += balance
+
+    # Net Income
+    *_, total_ie = get_profit_loss_data()
+    net_income = total_ie["net"]
+    equity.append({
+        "account_x": chart_of_accounts_db(
+            name="Current Year Earnings" if net_income >= 0 else "Current Period Loss",
+            code="399",
+            type="Equity",
+            normal_side="credit" if net_income >= 0 else "debit",
+            opening_balance=0,
+            user_id=session["user_id"]
+        ),
+        "account_total": abs(net_income)
+    })
+    total_equity += net_income
+
+    # Owner's Capital
+    capital_account_name = f"{session.get('bussiness_name', 'Business')} Capital"
+    capital_balance = 0
+    for account in all_accounts:
+        if account.type.lower() == 'equity' and capital_account_name in account.name:
+            capital_balance = account.opening_balance
+            txns = transactions_by_account.get(account.id, [])
+            for txn in txns:
+                if account.normal_side == 'debit':
+                    capital_balance += txn.amount if txn.is_debit else -txn.amount
+                else:
+                    capital_balance += -txn.amount if txn.is_debit else txn.amount
+            break
+
+    equity.append({
+        "account_x": chart_of_accounts_db(
+            name=capital_account_name,
+            code="300",
+            type="Equity",
+            normal_side="credit",
+            opening_balance=0,
+            user_id=session["user_id"]
+        ),
+        "account_total": capital_balance
+    })
+    total_equity += capital_balance
+    total_liability_equity = total_liabilities + total_equity
+
+    total_bs = {
+        "assets": total_assets,
+        "liabilities": total_liabilities,
+        "equity": total_equity,
+    }
+
+    # 🔽 Render HTML and generate PDF
+    rendered_html = render_template(
+        "main/reports/pdf/balance_sheet.html",
+        net=net_income,
+        total_bs=total_bs,
+        assets=assets,
+        liabilities=liabilities,
+        equity=equity,
+        total_equity=total_equity,
+        total_liability_equity=total_liability_equity
+    )
 
     pdf = HTML(string=rendered_html).write_pdf()
-
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'inline; filename=balance_sheet.pdf'
     return response
+
+
+
 # Settings
 
 @app.route("/settings/accounts", methods=['GET', 'POST'])
@@ -641,11 +839,11 @@ def settings_categories():
             name = request.form['name']
             type_ = request.form['type']
             parent_id = request.form.get('parent') or None
-            #tax_rate_id = request.form.get('tax_rate_id') or None  # Use exact name from form input
+            
 
             # Optional: Convert to int if needed
             parent_category_id = parent_id if parent_id else None
-           # tax_rate_id = tax_rate_id if tax_rate_id else None
+           
 
             # Now you can use parent_category_id and tax_rate_id when creating the new category
             new_category = categories_db(
@@ -653,7 +851,7 @@ def settings_categories():
                 name=name,
                 type=type_,
                 parent_category_id=parent_category_id,
-                #tax_rate_id=tax_rate_id   
+                 
             )
 
             db.session.add(new_category)
@@ -666,7 +864,6 @@ def settings_categories():
             flash(f'Error adding account: {str(e)}', 'danger')
 
     categories_ = db.session.query(categories_db).filter_by(user_id=session["user_id"]).all()
-    #tax_rates_list = db.session.query(tax_rates_db).filter_by(user_id=session["user_id"]).all()
     return render_template("main/settings/categories.html",categories=categories_)#,tax_rates_list=tax_rates_list
 
 @app.route("/edit_category/<int:category_id>", methods=["POST"])
@@ -677,10 +874,7 @@ def edit_category(category_id):
         category.name = request.form["name"]
         category.type = request.form["type"]
         parent_id = request.form.get("parent_category_id")
-        #tax_rate_id = request.form.get("tax_rate_id")
-
         category.parent_category_id = int(parent_id) if parent_id else None
-        #category.tax_rate_id = int(tax_rate_id) if tax_rate_id else None
 
         db.session.commit()
     return redirect(url_for("settings_categories"))
@@ -700,15 +894,74 @@ def delete_category(category_id):
 def settings_profile():
     user = db.session.query(users_db).filter_by(id=session["user_id"]).first()
 
-    if request.method == 'POST' and user:
-        user.username = request.form.get("username")
-        user.business_name = request.form.get("business_name")
-        user.currency = request.form.get("currency")
-        user.fiscal_year = request.form.get("fiscal_year_start")
-        db.session.commit()
-        flash("Profile updated successfully!", "success")
+    if request.method == 'POST':
+        try:
+            # Get form data
+            username = request.form.get("username", "").strip()
+            bussiness_name = request.form.get("bussiness_name", "").strip()
+            currency = request.form.get("currency", "").strip()
+            # After getting form input
+            fiscal_year_str = request.form.get("fiscal_year_start", "").strip()
 
-    return render_template("main/settings/profile.html", user=user)
+            # Parse only once
+            fiscal_year = datetime.strptime(fiscal_year_str, "%Y-%m-%d").date() if fiscal_year_str else None
+
+            # Optional: validate here, but you already parsed it safely
+            user.fiscal_year_start = fiscal_year
+
+            
+            # Validate all fields
+            errors = []
+            
+            if not username:
+                errors.append("Username is required")
+            elif len(username) > 50:
+                errors.append("Username must be less than 50 characters")
+                
+            if not bussiness_name:
+                errors.append("Business name is required")
+            elif len(bussiness_name) > 100:
+                errors.append("Business name must be less than 100 characters")
+                
+            if not currency:
+                errors.append("Currency is required")
+                
+            if not fiscal_year:
+                errors.append("Fiscal year start date is required")
+            
+            if errors:
+                for error in errors:
+                    flash(error, "error")
+                return redirect(url_for('settings_profile'))  # Changed to current endpoint
+            
+            # Update user if validation passes
+            user.username = username
+            user.bussiness_name = bussiness_name
+            user.currency = currency
+            user.fiscal_year_start = fiscal_year  # Make sure this matches your model
+            
+            db.session.commit()
+            flash("Profile updated successfully!", "success")
+            return redirect(url_for('settings_profile'))  # PRG pattern
+            
+        except IntegrityError as e:
+            db.session.rollback()
+            if "NOT NULL constraint" in str(e):
+                flash("Required fields cannot be empty", "error")
+            else:
+                flash("A database error occurred", "error")
+            return redirect(url_for('settings_profile'))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f"An unexpected error occurred: {str(e)}", "error")
+            return redirect(url_for('settings_profile'))
+
+
+    # GET request or form display
+    return render_template("main/settings/profile.html", 
+                         user=user,
+                         current_year=datetime.now().year)  # Added helpful template variable
 
 @app.route('/settings/profile/delete', methods=['GET', 'POST'])
 @login_required

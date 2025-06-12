@@ -9,14 +9,13 @@ class users_db(db.Model):
     email = db.Column(db.String, unique=True, nullable=False)
     password_hash = db.Column(db.String, nullable=False)
     bussiness_name = db.Column(db.String, unique=True, nullable=False)
-    logo_path = db.Column(db.String, nullable=True)
     currency = db.Column(db.String, default='USD')
     fiscal_year_start = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    accounts = db.relationship('chart_of_accounts_db', back_populates='user')
-    categories = db.relationship('categories_db', back_populates='user')
-    transactions = db.relationship('transactions_db', back_populates='user')
+    accounts = db.relationship('chart_of_accounts_db', back_populates='user',cascade="all, delete-orphan")
+    categories = db.relationship('categories_db', back_populates='user',cascade="all, delete-orphan")
+    transactions = db.relationship('transactions_db', back_populates='user',cascade="all, delete-orphan")
 
 class chart_of_accounts_db(db.Model):
     __tablename__ = 'chart_of_accounts_db'

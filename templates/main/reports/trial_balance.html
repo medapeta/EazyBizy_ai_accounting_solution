@@ -10,7 +10,7 @@
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="text-secondary mb-0">🧮 Account Balances</h5>
         <span class="badge bg-dark text-light shadow-sm px-3 py-2 fs-6 rounded-pill">
-          As of: <!-- {{ date }} -->
+          As of: {{ current_date.strftime('%Y-%m-%d') if current_date else 'Current' }}
         </span>
       </div>
 
@@ -25,33 +25,62 @@
               <th class="text-end text-danger">⬇️ Credit</th>
             </tr>
           </thead>
-          <tbody>
-            {% for acct in accountz %}
-            <tr>
-              <td class="text-light">{{ acct["account_x"].name }}</td>
-              <td class="text-light">{{ acct["account_x"].type }}</td>
-              <td class="text-light">{{ acct["account_x"].code }}</td>
-              <td class="text-end text-success">
-                {% if acct["account_x"].normal_side == 'debit' %}
-                {{ "{:,.2f}".format(acct["account_total"]) }}
-                {% else %}—{% endif %}
-              </td>
-              <td class="text-end text-danger">
-                {% if acct["account_x"].normal_side == 'credit' %}
-                {{ "{:,.2f}".format(acct["account_total"]) }}
-                {% else %}—{% endif %}
+      <tbody>
+          {% for type, accounts in grouped_accounts.items() %}
+            <tr class="bg-dark">
+              <td colspan="5" class="fw-bold text-info">
+                {{ type|upper }} ACCOUNTS
               </td>
             </tr>
-            {% endfor %}
 
-            <!-- Totals -->
-            <tr class="fw-bold border-top text-light">
-              <td colspan="3" class="text-end">🧮 Total</td>
-              <td class="text-end text-success">{{ "{:,.2f}".format(total_dc["debits"]) }}</td>
-              <td class="text-end text-danger">{{ "{:,.2f}".format(total_dc["credits"]) }}</td>
-            </tr>
-          </tbody>
+            {% for account in accounts %}
+              <tr class="{{ 'opacity-75' if account.account_total == 0 }} 
+                          {{ 'border-top border-info' if 'capital' in account.account_x.name.lower() }}">
+                <td>{{ account.account_x.name }}</td>
+                <td>{{ account.account_x.type }}</td>
+                <td>{{ account.account_x.code }}</td>
+                <td class="text-end text-success">
+                  {% if account.account_x.normal_side == 'debit' %}
+                    {{ "{:,.2f}".format(account.account_total) if account.account_total != 0 else "—" }}
+                  {% else %}—{% endif %}
+                </td>
+                <td class="text-end text-danger">
+                  {% if account.account_x.normal_side == 'credit' %}
+                    {{ "{:,.2f}".format(account.account_total) if account.account_total != 0 else "—" }}
+                  {% else %}—{% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          {% endfor %}
+        </tbody>
+        <tfoot class="table-dark">
+          <tr>
+            <td colspan="3" class="text-end"> Total Debits:</td>
+            <td class="text-end text-success">{{ "{:,.2f}".format(total_dc['debits']) }}</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan="3" class="text-end"> Total Credits:</td>
+            <td></td>
+            <td class="text-end text-danger">{{ "{:,.2f}".format(total_dc['credits']) }}</td>
+          </tr>
+        </tfoot>
+
         </table>
+      </div>
+
+      <!-- Balance Status Indicator -->
+      <div class="mt-4 p-3 rounded-3 {{ 'bg-success bg-opacity-75' if total_dc.balanced else 'bg-danger bg-opacity-25' }}">
+        <div class="d-flex justify-content-center align-items-center">
+          <i class="bi bi-{{ 'check-circle-fill' if total_dc.balanced else 'exclamation-triangle-fill' }} me-2"></i>
+          <span>
+            {% if total_dc.balanced %}
+              Trial Balance is Correct (Debits = Credits)
+            {% else %}
+              Trial Balance is Unbalanced (Difference: {{ "{:,.2f}".format(total_dc.debits - total_dc.credits) }})
+            {% endif %}
+          </span>
+        </div>
       </div>
 
     </div>

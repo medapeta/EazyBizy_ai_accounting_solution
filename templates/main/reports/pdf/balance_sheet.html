@@ -10,22 +10,23 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 2rem;
   }
- .brand {
-      background-color: #1f1f1f;
-      border: 1px solid #333;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      color: #269dd8;
-      font-size: 1.2rem;
-      font-weight: bold;
-      text-align: center;
-      padding: 0.75rem;
-    }
 
-    .brand i {
-      font-size: 1.5rem;
-      color: #64b5f6;
-    }
+  .brand {
+    background-color: #1f1f1f;
+    border: 1px solid #333;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    color: #269dd8;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 0.75rem;
+  }
+
+  .brand i {
+    font-size: 1.5rem;
+    color: #64b5f6;
+  }
 
   h1 {
     text-align: center;
@@ -77,12 +78,6 @@
     background-color: #1a1a1a;
   }
 
-  tfoot td {
-    font-weight: bold;
-    background-color: #1c1c1c;
-    border-top: 2px solid #64b5f6;
-  }
-
   .totals-row {
     font-weight: bold;
     border-top: 2px solid;
@@ -101,10 +96,6 @@
   .total-equity {
     border-color: #60a5fa;
     color: #60a5fa;
-  }
-
-  .net-income {
-    color: #90caf9;
   }
 
   .equation-card {
@@ -137,68 +128,69 @@
 </style>
 </head>
 <body>
+
   <div class="brand">
     <i>⚡</i> Powered by EazyBizy
   </div>
 
   <h1>Balance Sheet</h1>
-  
+
+  <!-- ASSETS -->
   <div class="section-title">Assets</div>
   <table>
     <tbody>
       {% for asset in assets %}
       <tr>
-        <td>{{ asset["account_x"].name }}</td>
-        <td>{{ "{:,.2f}".format(asset["account_total"]) }}</td>
+        <td>{{ asset.account_x.name }}</td>
+        <td>{{ "{:,.2f}".format(asset.account_total) }}</td>
       </tr>
       {% endfor %}
       <tr class="totals-row total-assets">
         <td>Total Assets</td>
-        <td>{{ "{:,.2f}".format(total_bs["assets"]) }}</td>
+        <td>{{ "{:,.2f}".format(total_bs.assets) }}</td>
       </tr>
     </tbody>
   </table>
 
+  <!-- LIABILITIES -->
   <div class="section-title">Liabilities</div>
   <table>
     <tbody>
       {% for liability in liabilities %}
       <tr>
-        <td>{{ liability["account_x"].name }}</td>
-        <td>{{ "{:,.2f}".format(liability["account_total"]) }}</td>
+        <td>{{ liability.account_x.name }}</td>
+        <td>{{ "{:,.2f}".format(liability.account_total) }}</td>
       </tr>
       {% endfor %}
       <tr class="totals-row total-liabilities">
         <td>Total Liabilities</td>
-        <td>{{ "{:,.2f}".format(total_bs["liabilities"]) }}</td>
+        <td>{{ "{:,.2f}".format(total_bs.liabilities) }}</td>
       </tr>
     </tbody>
   </table>
 
+  <!-- EQUITY -->
   <div class="section-title">Equity</div>
   <table>
     <tbody>
       {% for eq in equity %}
       <tr>
-        <td>{{ eq["account_x"].name }}</td>
-        <td>{{ "{:,.2f}".format(eq["account_total"]) }}</td>
+        <td>{{ eq.account_x.name }}</td>
+        <td>{{ "{:,.2f}".format(eq.account_total) }}</td>
       </tr>
       {% endfor %}
-      <tr>
-        <td>Net Income/Loss</td>
-        <td class="net-income">{{ "{:,.2f}".format(net) }}</td>
-      </tr>
       <tr class="totals-row total-equity">
         <td>Total Equity</td>
-        <td>{{ "{:,.2f}".format(total_bs["equity"]) }}</td>
+        <td>{{ "{:,.2f}".format(total_bs.equity) }}</td>
       </tr>
     </tbody>
   </table>
 
+  <!-- ACCOUNTING EQUATION -->
   <div class="equation-card">
     <div class="equation-section">
       <div class="equation-title">Total Assets</div>
-      <div class="equation-value">{{ "{:,.2f}".format(total_bs["assets"]) }}</div>
+      <div class="equation-value">{{ "{:,.2f}".format(total_bs.assets) }}</div>
     </div>
     <div class="equation-section">
       <div class="equation-title">Liabilities + Equity</div>
