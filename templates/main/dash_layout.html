@@ -215,6 +215,7 @@
     .flashes .alert {
       border-radius: 0.5rem;
       margin-bottom: 1rem;
+      background-color: #a5d6a7;
     }
     .help-modal {
       overflow: hidden;
@@ -401,7 +402,8 @@
       border-radius: 1rem;
     }
     .btn-close {
-      filter: invert(1);
+       background-color: transparent;
+       color: black
     }
     .text-green {
       color: #34d399;
@@ -553,7 +555,7 @@
           <div class="modal-content">
             <div class="modal-header border-0">
               <h5 class="modal-title text-green" id="helpModalLabel">Help Center</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <button type="button" data-bs-dismiss="alert" aria-label="Close" style="background: none; border: none; font-size: 1.5rem; color: rgb(0, 0, 0); cursor: pointer;">&times;</button>
             </div>
             <div class="modal-body">
               <!-- Your Help Section Starts Here -->
@@ -859,7 +861,7 @@
         {% if messages %}
           <div class="flashes container mt-3">
             {% for category, message in messages %}
-              <div class="alert alert-{{ category }} alert-dismissible fade show flash-text" role="alert">
+              <div class="alert alert-{{ category }} alert-dismissible fade show flash-text" style="background-color: rgb(168, 236, 168);" role="alert">
                 {{ message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
