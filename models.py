@@ -27,7 +27,6 @@ class chart_of_accounts_db(db.Model):
     normal_side = db.Column(db.String, nullable=False)
     code = db.Column(db.String, nullable=True)
     opening_balance = db.Column(db.Numeric(12, 2), default=0.00)
-    is_system_account = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('users_db', back_populates='accounts')
