@@ -963,15 +963,29 @@ def settings_profile():
                          user=user,
                          current_year=datetime.now().year)  # Added helpful template variable
 
+
 @app.route('/settings/profile/delete', methods=['GET', 'POST'])
 @login_required
 def delete_profile():
-    user = db.session.query(users_db).get(session["user_id"])
+    user_id = session["user_id"]
+
+    # Load user along with their accounts, categories, and transactions
+    user = db.session.query(users_db).options(
+        joinedload(users_db.accounts),
+        joinedload(users_db.categories),
+        joinedload(users_db.transactions)
+    ).get(user_id)
+
+    if not user:
+        flash("User not found.", "danger")
+        return redirect(url_for('index'))
+
     db.session.delete(user)
     db.session.commit()
     session.clear()
-    flash("Profile deleted. successfuly", "success")
+    flash("Profile deleted successfully", "success")
     return redirect(url_for('index'))
+
 
 @app.route('/settings/report_problem', methods=['GET', 'POST'])
 def report_problem():
