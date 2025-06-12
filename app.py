@@ -894,7 +894,18 @@ def settings_profile():
 @app.route('/settings/profile/delete', methods=['GET', 'POST'])
 @login_required
 def delete_profile():
-    user = db_session.query(users_db).get(session["user_id"])
+    user_id = session["user_id"]
+
+    # Load user along with their accounts and transactions
+    user = db_session.query(users_db).options(
+        joinedload(users_db.accounts),
+        joinedload(users_db.transactions)
+    ).get(user_id)
+
+    if not user:
+        flash("User not found.", "danger")
+        return redirect(url_for('index'))
+
     db_session.delete(user)
     db_session.commit()
     session.clear()
