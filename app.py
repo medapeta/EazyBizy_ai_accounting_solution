@@ -50,9 +50,6 @@ def index():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    #Log user in
-    # Forget any user_id
-    session.clear()
 
     if request.method == 'POST':
         # Ensure username was submitted
@@ -73,6 +70,8 @@ def login():
 
         #if exists create a session["username"] and continue
         if user_in_db and check_password_hash(user_in_db.password_hash, login_password):
+            # Forget any user_id
+            session.clear()
             session["user_id"] = user_in_db.id
             session["bussiness_name"] = user_in_db.bussiness_name
             flash(f'Wellcome back {user_in_db.username} you are logged in!', "success")
@@ -81,7 +80,7 @@ def login():
         #if don't exist redirect to login
         else:
             flash("Invalid username or password", "error")
-            return redirect("/login")
+            return redirect(url_for('login'))
         
     return render_template("login.html",current_year=datetime.now().year)
 
