@@ -217,7 +217,7 @@ def dashboard():
     #chart data 
     i,e = show_income_expense_chart()
     cash_balances, cash_dates = show_cash_chart()
-    cash_on_hand = cash_balances[-1]
+    cash_on_hand = cash_balances[-1] if cash_balances else 0.00
     return render_template("main/dashboard.html",username=username,bussiness_name=bussiness_name,formatted_date=formatted_date, income=income, expense=expense, net=net, 
                            cash_on_hand=cash_on_hand, net_worth=net_worth,
                            recent_transactions=recent_transactions,i=i,e=e,cash_balances=cash_balances, cash_dates=cash_dates)
