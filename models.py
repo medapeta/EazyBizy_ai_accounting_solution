@@ -33,7 +33,6 @@ class chart_of_accounts_db(Base):
     normal_side = Column(String, nullable=False) # debit or credit
     code = Column(String, nullable=True)
     opening_balance = Column(Numeric(12, 2), default=0.00)
-    is_system_account = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship('users_db', back_populates='accounts')
