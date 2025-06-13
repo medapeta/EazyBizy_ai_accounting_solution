@@ -31,7 +31,7 @@
   }
 
   .dashboard-page .card-header.dashboard-header {
-    background: linear-gradient(135deg, #47603f, #c0f6c5);
+    background: linear-gradient(135deg, #3f4e60, #04050b);
     color: #fff;
     border-radius: 16px 16px 0 0;
     font-weight: 600;
@@ -82,7 +82,7 @@
   .dashboard-page .badge {
     border-radius: 10px;
     padding: 0.6rem 1.2rem;
-    background: linear-gradient(135deg, #4ade80, #22c55e);
+    background: linear-gradient(135deg, #000000, #060e09);
     color: #ffffff;
   }
 
@@ -102,7 +102,7 @@
   .dashboard-page .quick-stats .border-warning { border-color: #f59e0b; }
 
   .dashboard-page .custom-header {
-    background: linear-gradient(135deg, #b0ecab1b, #3d6b476b);
+    background: linear-gradient(135deg, #b0ecab1b, #2557996b);
     color: #ffffff;
   }
 
@@ -118,12 +118,12 @@
 
 <div class="dashboard-page container mt-4">
   <!-- Dashboard Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4 p-3 custom-header rounded">
+  <div class="d-flex justify-content-between align-items-center mb-4 p-3 custom-header">
     <div>
-      <h1 class="mb-0">Financial Dashboard of {{ business_name }}</h1>
+      <h2 class="mb-0">Financial Dashboard of {{ bussiness_name[0].capitalize() + bussiness_name[1:].lower() }}</h2>
       <p class="mb-0">🔄 {{ formatted_date }}</p>
     </div>
-    <div class="badge fs-6">{{ username }}</div>
+    <div class="badge fs-6">{{ username[0].capitalize() + username[1:].lower() }}</div>
   </div>
 
   <!-- Quick Stats Row -->
