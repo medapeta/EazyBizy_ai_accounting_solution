@@ -1,4 +1,4 @@
-# EazyBizy v1.0 - AI-Powered Bookkeeping Solution
+# EazyBizy cs50 Final Project - AI-Powered Bookkeeping Solution
 
 **Author:** Medhanie Petros (Ola cs50)
 **Project for:** CS50's Final Project
@@ -7,14 +7,8 @@
 
 [Link to Video Demo](https://youtu.be/YOUR_VIDEO_LINK_HERE)
 
-## table of contents
-- [Introduction](#introduction)
-- [Bigger Picture](#bigger-picture)
-- [Key Features](#key-features)
-- [Tech Stack](#tech-stack)
-- 
-## Introduction
 
+## Introduction 
 For my CS50 final project, I built EazyBizy, a simple bookkeeping web app for freelancers and small business owners who find traditional accounting software intimidating.
 The core feature is an AI assistant that helps you categorize transactions. You can just type what happened in plain English, like "bought office supplies with cash," and the AI will suggest the correct accounting entries. It also generates essential reports like a Profit & Loss statement that you can export to PDF.
 
@@ -28,7 +22,7 @@ This Branch is deployed on render and it is the same to the local version execep
 This Branch can be cloned from github and run on your machine is uses raw Sqlalchemy and SQLite3 for local deployment because it’s lightweight, requires zero setup, and is perfect for quick development and testing on a local machine. It stores the entire database in a single file, making it easy to manage and share during development.
 
 Other differences and similiarities between this branches is explained in detail on the topics below.
-
+</details>
 
 ## Key Features
 
