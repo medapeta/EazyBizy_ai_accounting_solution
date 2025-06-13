@@ -1,7 +1,3 @@
-Of course! A well-documented project is a hallmark of a great developer. Based on the comprehensive snapshot you provided, here is a detailed `README.md` file for your EazyBizy project. It covers the project's purpose, a deep dive into the file structure and code, and the design decisions you made along the way.
-
----
-
 # EazyBizy v1.0 - AI-Powered Bookkeeping Solution
 
 **Author:** Medhanie Petros (Ola cs50)
@@ -11,13 +7,28 @@ Of course! A well-documented project is a hallmark of a great developer. Based o
 
 [Link to Video Demo](https://youtu.be/YOUR_VIDEO_LINK_HERE)
 
+## table of contents
+- [Introduction](#introduction)
+- [Bigger Picture](#bigger-picture)
+- [Key Features](#key-features)
+- [Tech Stack](#tech-stack)
+- 
 ## Introduction
 
-EazyBizy is a web-based bookkeeping application designed to demystify accounting for small business owners, freelancers, and individuals who need to track their finances without getting bogged down by complex jargon. Built with Flask, this project addresses a common pain point: traditional accounting software is often intimidating and overly complicated for those without a financial background.
+For my CS50 final project, I built EazyBizy, a simple bookkeeping web app for freelancers and small business owners who find traditional accounting software intimidating.
+The core feature is an AI assistant that helps you categorize transactions. You can just type what happened in plain English, like "bought office supplies with cash," and the AI will suggest the correct accounting entries. It also generates essential reports like a Profit & Loss statement that you can export to PDF.
 
-The core philosophy of EazyBizy is simplicity and intelligence. It provides a clean, intuitive interface for logging financial transactions, generating essential reports, and managing a chart of accounts. The standout feature is its integration with a powerful AI assistant (powered by the DeepSeek model via OpenRouter API), which can help users correctly categorize transactions using natural language descriptions. This significantly lowers the barrier to entry, allowing users to simply describe what happened (e.g., "bought office supplies with cash") and receive guidance on the proper debit and credit entries.
+## Bigger Picture
+This github repository contains two important branches the localDeployment (you can see how to implement this on your machine later) and the renderDeployment which is deployed in render.com under the subdomain name (https://eazybizy.onrender.com). 
 
-This project is not just a transaction logger; it is a comprehensive tool that provides a clear financial picture through a dashboard with key metrics, visual charts, and standard reports like the Profit & Loss Statement and Balance Sheet, which can be exported to PDF for professional use.
+* ## Live Version (renderDeployment Branch) (https://eazybizy.onrender.com)
+This Branch is deployed on render and it is the same to the local version execept that it uses render's Postgres Database and Flask-Sqlalchemy to handle it. The PostgreSQL was implemented because its a production-grade, server-based database that supports concurrent access, scalability, and better reliability in web environments—while SQLite is a lightweight, file-based database that's better suited for local development or single-user apps.
+
+* ## Local Version (renderDeployment Branch)
+This Branch can be cloned from github and run on your machine is uses raw Sqlalchemy and SQLite3 for local deployment because it’s lightweight, requires zero setup, and is perfect for quick development and testing on a local machine. It stores the entire database in a single file, making it easy to manage and share during development.
+
+Other differences and similiarities between this branches is explained in detail on the topics below.
+
 
 ## Key Features
 
@@ -48,7 +59,6 @@ EazyBizy is built with a robust and modern technology stack:
 *   **Emailing:** Flask-Mail (for problem reporting)
 *   **Data Visualization:** Chart.js
 *   **Environment Management:** `python-dotenv`
-
 
 ## Directory Structure
 
