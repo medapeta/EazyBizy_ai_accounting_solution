@@ -4,7 +4,7 @@
 
 ## **Project for:** CS50's Final Project 
 
-![Logo](static\images\Home_page.png) 
+![Logo](static/images/Home_page.png) 
 
 ### Table of Contents
 *   [Video Demo](#video-demo)
