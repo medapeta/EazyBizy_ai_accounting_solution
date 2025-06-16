@@ -10,77 +10,83 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
   <style>
     :root {
-      --dark-green: #1e7b80;
-      --medium-green: #42b5b5;
-      --light-green: #74b3dc;
-      --pale-green: #c8dde6;
-      --dark-bg: #121212;
-      --card-bg: #1f1f1f;
-    }
+  --background-color: #343541;     /* Main dark background */
+  --surface-color: #444654;        /* Panels or cards */
+  --text-color: #d1d5db;           /* Light gray text */
+  --text-muted: #9ca3af;           /* Muted/secondary text */
+  --border-color: #3e3f4b;         /* Borders or dividers */
+  --highlight-color: #ffffff;      /* Bright white for important elements */
+}
+
+
     
-    body {
-      background-color: var(--dark-bg);
-      color: #e0e0e0;
-      font-family: 'Poppins', sans-serif;
-    }
+  body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: 'Poppins', sans-serif;
+}
 
-    /* Header */
-    .site-header {
-      background-color: #111;
-      border-bottom: 1px solid var(--medium-green);
-    }
+/* Header */
+.site-header {
+  background-color: var(--surface-color);
+  border-bottom: 1px solid var(--border-color);
+}
 
-    .logo {
-      color: var(--light-green);
-    }
+.logo {
+  color: var(--highlight-color);
+}
 
-    /* Buttons */
-    .btn-primary {
-      background-color: var(--dark-green);
-      border-color: var(--dark-green);
-    }
+/* Buttons */
+.btn-primary {
+  background-color: var(--highlight-color);
+  color: var(--background-color);
+  border-color: var(--highlight-color);
+}
 
-    .btn-primary:hover {
-      background-color: var(--medium-green);
-      border-color: var(--medium-green);
-    }
+.btn-primary:hover {
+  background-color: var(--text-color);
+  border-color: var(--text-color);
+  color: var(--background-color);
+}
 
-    .btn-outline-secondary {
-      color: var(--light-green);
-      border-color: var(--light-green);
-    }
+.btn-outline-secondary {
+  color: var(--highlight-color);
+  border: 1px solid var(--highlight-color);
+  background-color: transparent;
+}
 
-    .btn-outline-secondary:hover {
-      background-color: var(--dark-green);
-      color: white;
-    }
+.btn-outline-secondary:hover {
+  background-color: var(--highlight-color);
+  color: var(--background-color);
+}
 
-    /* Cards */
-    .card-custom {
-      background-color: var(--card-bg);
-      border: 1px solid var(--medium-green);
-      color: var(--pale-green);
-    }
+/* Cards */
+.card,
+.card-custom {
+  background-color: var(--surface-color);
+  border: 1px solid var(--border-color);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  color: var(--text-color);
+}
 
-    /* Text */
-    .text-green {
-      color: var(--light-green);
-    }
+/* Text colors */
+.text-green,
+.text-pale-green {
+  color: var(--text-muted); /* Unified neutral tone */
+}
 
-    .text-pale-green {
-      color: var(--pale-green);
-    }
+/* Hero section base */
+.hero-base {
+  background: radial-gradient(circle at center, #1f1f1f, #121212);
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
+}
 
-    /* Hero section base */
-    .hero-base {
-      background: radial-gradient(circle at center, #0a1e0a, #040704);
-      box-shadow: 0 0 60px rgba(46, 79, 125, 0.8);
-    }
+/* Glow effects */
+.green-glow {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.05), transparent);
+}
 
-    /* Glow effects */
-    .green-glow {
-      background: radial-gradient(circle, rgba(129, 199, 132, 0.1), transparent);
-    }
   </style>
   <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
 </head>

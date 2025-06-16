@@ -1,127 +1,13 @@
 {% extends "main/dash_layout.html" %}
 
 {% block content %}
-<style>
-  .dashboard-page {
-    background-color: #121212;
-    color: #e0e0e0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-
-  .dashboard-page h1, .dashboard-page h5, .dashboard-page h6 {
-    font-weight: 600;
-  }
-
-  .dashboard-page a, .dashboard-page a:hover {
-    color: #90caf9;
-    text-decoration: none;
-  }
-
-  /* Card Styles */
-  .dashboard-page .card {
-    background: #1e1e1e;
-    border-radius: 16px;
-    border: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    transition: transform 0.2s ease;
-  }
-
-  .dashboard-page .card:hover {
-    transform: translateY(-5px);
-  }
-
-  .dashboard-page .card-header.dashboard-header {
-    background: linear-gradient(135deg, #3f4e60, #04050b);
-    color: #fff;
-    border-radius: 16px 16px 0 0;
-    font-weight: 600;
-  }
-
-  .dashboard-page .list-group-item {
-    background-color: #232323;
-    color: #e0e0e0;
-    border: none;
-    border-radius: 12px;
-    margin-bottom: 8px;
-    transition: background 0.2s ease;
-  }
-
-  .dashboard-page .list-group-item:hover {
-    background-color: #2c2c2c;
-  }
-
-  .dashboard-page .btn {
-    border-radius: 12px;
-    padding: 0.75rem 1.25rem;
-    font-weight: 500;
-    transition: all 0.2s ease-in-out;
-  }
-
-  .dashboard-page .btn:hover {
-    opacity: 0.85;
-  }
-
-  .dashboard-page .btn-success {
-    background: linear-gradient(135deg, #10b981, #059669);
-    border: none;
-    color: #fff;
-  }
-
-  .dashboard-page .btn-info {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    border: none;
-    color: #fff;
-  }
-
-  .dashboard-page .btn-secondary {
-    background: linear-gradient(135deg, #6b7280, #4b5563);
-    border: none;
-    color: #fff;
-  }
-
-  .dashboard-page .badge {
-    border-radius: 10px;
-    padding: 0.6rem 1.2rem;
-    background: linear-gradient(135deg, #000000, #060e09);
-    color: #ffffff;
-  }
-
-  .dashboard-page .display-6 {
-    font-size: 2rem;
-    font-weight: 700;
-  }
-
-  .dashboard-page .quick-stats .card {
-    border-left: 6px solid;
-    padding-left: 0.5rem;
-  }
-
-  .dashboard-page .quick-stats .border-primary { border-color: #3b82f6; }
-  .dashboard-page .quick-stats .border-success { border-color: #22c55e; }
-  .dashboard-page .quick-stats .border-danger { border-color: #ef4444; }
-  .dashboard-page .quick-stats .border-warning { border-color: #f59e0b; }
-
-  .dashboard-page .custom-header {
-    background: linear-gradient(135deg, #b0ecab1b, #2557996b);
-    color: #ffffff;
-  }
-
-  #myChart, #cashChart {
-    background-color: #1e1e1e !important;
-    padding: 10px;
-    border-radius: 16px;
-  }
-  .card-text {
-    color: white;
-  }
-</style>
 
 <div class="dashboard-page container mt-4">
   <!-- Dashboard Header -->
   <div class="d-flex justify-content-between align-items-center mb-4 p-3 custom-header">
     <div>
       <h2 class="mb-0">Financial Dashboard of {{ bussiness_name[0].capitalize() + bussiness_name[1:].lower() }}</h2>
-      <p class="mb-0">🔄 {{ formatted_date }}</p>
+      <p class="mb-0"> {{ formatted_date }}</p>
     </div>
     <div class="badge fs-6">{{ username[0].capitalize() + username[1:].lower() }}</div>
   </div>
@@ -131,7 +17,7 @@
     <div class="col-md-3 mb-3">
       <div class="card border-primary">
         <div class="card-body">
-          <h5 class="card-title text-primary">💰 Cash On Hand</h5>
+          <h5 class="card-title text-primary">💰 Cash </h5>
           <p class="card-text display-6">${{ cash_on_hand }}</p>
         </div>
       </div>
@@ -200,8 +86,8 @@
     <!-- Recent Transactions -->
     <div class="col-lg-6 mb-4">
       <div class="card h-100">
-        <div class="card-header bg-light">
-          <h5 class="mb-0">⏳ Recent Transactions</h5>
+        <div class="card-header bg-dark">
+          <h5 class="mb-0"> Recent Transactions</h5>
         </div>
         <div class="card-body">
           <div class="list-group">
@@ -223,8 +109,8 @@
     <!-- Quick Actions -->
     <div class="col-lg-6 mb-4">
       <div class="card h-100">
-        <div class="card-header bg-light">
-          <h5 class="mb-0">⚡ Quick Actions</h5>
+        <div class="card-header bg-dark">
+          <h5 class="mb-0"> Quick Actions</h5>
         </div>
         <div class="card-body">
           <div class="d-grid gap-2 mb-4">
