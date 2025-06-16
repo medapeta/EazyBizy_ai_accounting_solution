@@ -46,6 +46,8 @@ mail = Mail(app)
 
 @app.route("/")
 def index():
+    if session.get("user_id"):
+        return redirect("/dashboard")
     return render_template("index.html",current_year=datetime.now().year)
 
 
@@ -391,7 +393,7 @@ def add_transactions():
 @app.route("/transactions/add_transactions/ai_help", methods=["POST","GET"])
 @login_required
 def ai_transaction_help():
-    user_input = request.form.get("transactionInput", "")
+    user_input = request.form.get("transaction_input", "")
     system_prompt = """
     You are a financial assistant. For any transaction description provided, identify all relevant accounts involved. 
     For each, determine the category (Revenue, Expense, Asset, Liability, or Equity) and whether it should be Debited or Credited.

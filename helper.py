@@ -234,31 +234,32 @@ def show_cash_chart():
 
 def ask_deepseek(user_message,system_c):
     
-    api_key = os.getenv("DEEPSEEK_API_KEY")
+    api_key = os.getenv("OPENROUTER_API_KEY")
     
     if not api_key:
         raise ValueError("DeepSeek API key not found in environment variables")
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
-        "HTTP-Referer": "http://localhost:5000",  # Or your app's domain (required!)
-        "X-Title": "EazyBizy"  # Optional, but recommended
+        "HTTP-Referer": "http://localhost:5000", 
+        "X-Title": "EazyBizy"  
     }
 
     data = {
-        "model": "deepseek/deepseek-r1",
+        "model": "deepseek/deepseek-r1-distill-llama-70b:free",
         "messages": [
             {"role": "system", "content": system_c},
             {"role": "user", "content": user_message}
         ],
         "temperature": 0.3,  # Low for consistent categorization,
-        "max_tokens": 800
+        "max_tokens": 700
     }
     try:
             response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=data)
             response.raise_for_status()  # Raise error for non-2xx codes
 
             json_data = response.json()
+            print(json_data) 
             return json_data["choices"][0]["message"]["content"]
 
     except Exception as e:
