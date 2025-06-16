@@ -1,0 +1,394 @@
+
+  /* ────────────────────────────────
+   I have used ChatGPT to make fast prototype and production of the css of the main dash_layout
+  This is the main layout css for the EazyBizy accounting dashboard
+   ──────────────────────────────── */
+
+/* 1. Global design tokens */
+:root {
+  /* Layout surfaces */
+  --sidebar-bg: #202123;
+  --sidebar-hover: #2d2e30;
+  --sidebar-active: #343541;
+  --content-bg: #343541;
+  --navbar-bg: #202123;
+  --highlight-bg: #444654;
+
+  /* Typography & borders */
+  --text-light: #e4e6eb;
+  --text-muted: #9ca3af;
+  --border-color: #3e3f4b;
+
+  /* Accent (white for minimalism) */
+  --primary-accent: #ffffff;
+  --accent:#ffffff;
+}
+
+/* 2. Page & layout */
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--content-bg);
+  color: var(--text-light);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+
+
+/* ─── Sidebar core ─────────────────────────────────────── */
+#sidebarMenu{
+  position:fixed;top:0;left:0;height:100vh;width:250px;
+  background:var(--sidebar-bg);
+  transform:translateX(-100%);
+  transition:transform .3s ease-in-out,width .25s;
+  z-index:1040;
+}
+#sidebarMenu.show{transform:translateX(0);}               /* mobile slide‑in */
+#sidebarMenu.collapsed{width:5%}       /* desktop thin */
+#sidebarMenu.collapsed .sidebar-text,
+#sidebarMenu.collapsed .sidebar-section-title span{display:none;}
+#sidebarMenu.collapsed .nav-link,
+#sidebarMenu.collapsed .sidebar-section-title{padding:.75rem;text-align:center;}
+
+/* ─── Sidebar links & headings ─────────────────────────── */
+.sidebar-section-title{
+  display:flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;margin-top:1rem;
+  font-weight:600;font-size:.85rem;text-transform:uppercase;color:var(--text-muted);
+  background:var(--sidebar-active);cursor:pointer;user-select:none;
+}
+.sidebar-section-title:first-child{margin-top:0;}
+.sidebar-section-title.collapsed i{transform:rotate(-90deg);}
+
+.nav-link{
+  display:flex;align-items:center;gap:.75rem;padding:.75rem 1.5rem;
+  color:var(--text-light);text-decoration:none;border-left:3px solid transparent;
+  transition:all .2s;
+}
+.nav-link:hover,
+.nav-link.active{background:var(--sidebar-hover);color:var(--accent);}
+.nav-link.active{border-left-color:var(--accent);}
+.nav-link i{font-size:1.25rem;min-width:24px;}
+
+/* ─── Collapse button (desktop) ────────────────────────── */
+.sidebar {
+  position: relative;
+}
+
+.sidebar-collapse-btn {
+  position: absolute;
+  top: 50%;
+  right: -22px; /* Half the button width + overlap */
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--sidebar-bg);
+  border: 2px solid var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1001;
+  color: var(--text-color);
+  transition: color 0.2s, background 0.2s;
+}
+
+.sidebar-collapse-btn:hover {
+  background: var(--sidebar-hover);
+  color: var(--text-light);
+}
+
+/* ─── Overlay for mobile ───────────────────────────────── */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1035;
+}
+
+/* ─── Top navbar ───────────────────────────────────────── */
+.brand{display:flex;align-items:center;gap:.75rem;font-weight:700;font-size:1.25rem;color:var(--accent);}
+.toggle-btn{background:none;border:none;color:var(--text-light);cursor:pointer;transition:color .2s;}
+.toggle-btn:hover{color:var(--accent);}
+
+/* ─── Content shift on desktop collapse ────────────────── */
+#contentArea{transition:margin-left .25s;}
+@media(min-width:992px){
+  #sidebarMenu{transform:none!important;position:relative;}
+  #contentArea{margin-left:5px;}                        /* default sidebar width */
+  #contentArea.sidebar-collapsed{margin-left:0.5%;}       /* thin mode */
+  /* burger & overlay hidden on desktop */
+  .toggle-btn{display:none!important;}
+  .overlay{display:none!important;}
+}
+
+/* 6. Alerts & flashes */
+.flashes .alert {
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  background: var(--highlight-bg);
+  color: var(--text-light);
+}
+
+/* 7. Buttons */
+.btn {
+  padding: 0.7rem 1.6rem; font-weight: 600; margin: 0.5rem;
+}
+.btn-primary {
+  background: var(--primary-accent); color: var(--sidebar-bg); border: none;
+}
+.btn-primary:hover { background: var(--text-light); }
+.btn-outline-secondary {
+  background: transparent; color: var(--primary-accent);
+  border: 1px solid var(--primary-accent);
+}
+.btn-outline-secondary:hover {
+  background: var(--primary-accent); color: var(--sidebar-bg);
+}
+
+/* 8. Modal & help dialog */
+.help-modal          { display: flex; justify-content: center; align-items: center; padding: 40px 20px; }
+.help-content,
+.modal-content       {
+  background: var(--content-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-light);
+  border-radius: 1rem;
+  max-width: 90%; margin: auto; padding: 1rem 1.5rem;
+  box-shadow: 0 0 30px rgba(255,255,255,0.08);
+  animation: fadeIn 0.3s ease-in-out;
+}
+.close-btn           { position: absolute; top: 15px; right: 20px; font-size: 2rem; background: none; border: none; color: var(--text-muted); }
+.close-btn:hover     { transform: scale(1.1); color: var(--primary-accent); }
+
+/* Help topics */
+.help-topic {
+  background: var(--highlight-bg);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--primary-accent);
+  padding: 1.5rem; margin-top: 1.5rem;
+  color: var(--text-light);
+}
+.help-topic h3 { margin-bottom: 0.5rem; color: var(--primary-accent); }
+
+/* Pro‑tip boxes */
+.pro-tip {
+  background: var(--highlight-bg);
+  border-left: 5px solid var(--primary-accent);
+  padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem;
+}
+.pro-tip h5 { color: var(--primary-accent); }
+.pro-tip p  { color: var(--text-muted); }
+
+/* Cards & reusable surfaces */
+.card-custom,
+.card {
+  background: var(--highlight-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  padding: 1rem;
+  color: var(--text-light);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-custom:hover,
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 10px rgba(255,255,255,0.05);
+}
+
+/* Utility classes */
+.text-muted  { color: var(--text-muted); }
+.text-light  { color: var(--text-light); }
+.bg-surface  { background: var(--highlight-bg); }
+
+/* 9. Fancy step circles & icons */
+.step-number {
+  font-size: 1.3rem; font-weight: 700;
+  width: 2.5rem; height: 2.5rem; border-radius: 50%;
+  background: var(--primary-accent); color: var(--sidebar-bg);
+  display: flex; align-items: center; justify-content: center;
+}
+.section-icon { font-size: 1.75rem; margin-bottom: 0.75rem; color: var(--primary-accent); }
+
+/* 10. Keyframes */
+@keyframes fadeIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* 11. Responsive sidebar (≤ 991.98 px) */
+@media (max-width: 991.98px) {
+  #sidebarMenu           { position: fixed; top: 0; left: 0; transform: translateX(-100%); }
+  #sidebarMenu.show      { transform: translateX(0); }
+  #sidebarMenu.collapsed { width: 280px; }
+  .overlay               {
+    display: block; position: fixed; inset: 0; z-index: 1049;
+    background: rgba(0,0,0,0.5);
+  }
+}
+
+    /* ────────────────────────────────
+   Elegant ChatGPT-Inspired Dark UI
+   ──────────────────────────────── */
+
+.dashboard-page {
+  background-color: #1c1c1e;
+  color: #e5e7eb;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+}
+
+/* Typography */
+.dashboard-page h1,
+.dashboard-page h5,
+.dashboard-page h6 {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.dashboard-page .display-6 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #f3f4f6;
+}
+
+.dashboard-page a,
+.dashboard-page a:hover {
+  color: #7dd3fc;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+/* Cards */
+.dashboard-page .card {
+  background: #2a2a2d;
+  border: 1px solid #333;
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.dashboard-page .card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Card Header */
+.dashboard-page .card-header.dashboard-header {
+  background: linear-gradient(135deg, #2d3748, #1a202c);
+  color: #f9fafb;
+  font-weight: 600;
+  border-radius: 18px 18px 0 0;
+  border-bottom: 1px solid #333;
+}
+
+/* List Group Items */
+.dashboard-page .list-group-item {
+  background-color: #252528;
+  color: #d1d5db;
+  border: 1px solid #333;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  transition: background 0.2s ease;
+}
+.dashboard-page .list-group-item:hover {
+  background-color: #313134;
+}
+
+/* Buttons */
+.dashboard-page .btn {
+  border-radius: 12px;
+  padding: 0.65rem 1.2rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+.dashboard-page .btn:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+.dashboard-page .btn-success {
+  background: linear-gradient(135deg, #10b981, #047857);
+  border: none;
+  color: #fff;
+}
+.dashboard-page .btn-info {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border: none;
+  color: #fff;
+}
+.dashboard-page .btn-secondary {
+  background: linear-gradient(135deg, #6b7280, #374151);
+  border: none;
+  color: #fff;
+}
+
+/* Badge */
+.dashboard-page .badge {
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #27272a, #1f2937);
+  color: #f9fafb;
+  font-size: 0.85rem;
+}
+
+/* Quick Stats Cards */
+.dashboard-page .quick-stats .card {
+  border-left: 5px solid;
+  padding-left: 0.8rem;
+  background: #2f2f32;
+}
+.dashboard-page .quick-stats .border-primary  { border-color: #60a5fa; }
+.dashboard-page .quick-stats .border-success  { border-color: #34d399; }
+.dashboard-page .quick-stats .border-danger   { border-color: #f87171; }
+.dashboard-page .quick-stats .border-warning  { border-color: #facc15; }
+
+/* Custom Header */
+.dashboard-page .custom-header {
+  background: linear-gradient(135deg, rgba(26, 27, 27, 0.25), rgba(88, 89, 91, 0.25));
+  color: #ffffff;
+  padding: 1rem 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+/* Chart Containers */
+#myChart,
+#cashChart {
+  background-color: #2d2d30 !important;
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid #3a3a3d;
+}
+
+/* Card Text */
+.card-text {
+  color: #f4f4f5;
+}
+
+/* ─── Add transaction css ─── */
+
+/* ─── Dark-Styled Glass Effect ─── */
+.glass-effect {
+  backdrop-filter: blur(14px);
+  background-color: rgba(28, 28, 30, 0.6); /* Deeper dark */
+  border: 1px solid rgba(125, 211, 252, 0.2); /* Soft cyan-blue glow */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 
+              0 0 12px rgba(125, 211, 252, 0.1); /* Depth + subtle color glow */
+  border-radius: 16px;
+  transition: all 0.3s ease-in-out;
+}
+.glass-effect:hover {
+  background-color: rgba(36, 36, 40, 0.75);
+  transform: scale(1.01);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 
+              0 0 14px rgba(125, 211, 252, 0.15);
+}
+
+/* ─── Glow Icon with Softer Emphasis ─── */
+.glow-icon {
+  text-shadow: 0 0 8px rgba(94, 234, 212, 0.9); /* Teal-cyan glow */
+  color: #a5f3fc; /* Light cyan */
+}

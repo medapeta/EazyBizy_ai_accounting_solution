@@ -1,156 +1,153 @@
 {% extends "/main/dash_layout.html" %}
 
 {% block content %}
-<!-- Bootstrap 5 & Bootstrap Icons CDN -->
-<style>
-  .glass-effect {
-  backdrop-filter: blur(12px);
-  background-color: rgba(33, 37, 41, 0.65); /* dark bg with opacity */
-  border: 1px solid rgba(40, 167, 69, 0.25); /* success green tint */
-  box-shadow: 0 4px 30px rgba(40, 167, 69, 0.2);
-  transition: all 0.4s ease-in-out;
-}
 
-.glow-icon {
-  text-shadow: 0 0 6px rgba(255, 193, 7, 0.8);
-}
+<!-- PAGE WRAPPER ──────────────────────────────────────────── -->
+<section class="dashboard-page py-5">
 
-</style>
-<div class="container mt-4">
-  <div class="card bg-dark text-light border-success rounded-4 shadow-lg">
-    <div class="card-header bg-success bg-opacity-25 border-success d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#aiHelpSection" style="cursor: pointer;">
-      <div>
-        <i class="bi bi-robot text-success me-2"></i>
-        Ask AI to Help with Categorizing Your Transactions?
-      </div>
-      <i class="bi bi-chevron-down text-success"></i>
-    </div>
+  <!-- AI helper accordion ---------------------------------- -->
+  <div class="container-lg">
+    <div class="card glass-effect border-0 shadow-lg mb-4">
 
-    <div class="collapse" id="aiHelpSection">
-      <div class="card-body">
-        <form id="aiForm" method="post" action="/transactions/add_transactions/ai_help">
-          <div class="mb-3">
-            <label for="transactionInput" class="form-label text-success">Enter a transaction description:</label>
-            <input type="text" name="transaction_input" class="form-control bg-dark text-light border-success" id="transactionInput" placeholder="e.g., POS withdrawal at Equity Bank">
-          </div>
-          <button type="submit" class="btn btn-success">Get AI Suggestion</button>
-        </form>
-
-        <div id="aiResponse" class="mt-4 p-4 rounded-4 border border-success bg-dark bg-opacity-75 text-light shadow-lg glass-effect d-none">
-          <div class="d-flex align-items-center mb-3">
-            <i class="bi bi-stars text-warning fs-4 me-3 glow-icon"></i>
-            <h5 class="mb-0 text-success">AI Suggestion</h5>
-          </div>
-          <div class="ps-3 text-light-emphasis fw-medium" id="aiOutput" style="font-size: 1.05rem;color:white !important">
-            {{ ai_response }}
-          </div>
+      <!-- clickable header -->
+      <div class="card-header dashboard-header d-flex justify-content-between align-items-center collapsed"
+           data-bs-toggle="collapse" data-bs-target="#aiHelpSection"
+           style="cursor:pointer;">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-robot text-success fs-5"></i>
+          <span>Ask AI to categorise your transactions</span>
         </div>
-
-
+        <i class="bi bi-chevron-down"></i>
       </div>
-    </div>
-  </div>
-</div>
 
-<main class="container py-4">
-  <div class="card rounded-4 shadow border-0" style="background-color: #1e1e1e;">
-    <div class="card-body p-4">
-      
-      <h2 class="text-center text-primary fw-bold mb-4">📝 Add Transaction</h2>
-
-      <!-- Transaction Form Card -->
-      <div class="card rounded-4 shadow border-0 mb-4" style="background-color: #1e1e1e;">
-        <div class="card-header rounded-top-4 px-4 py-3" style="background-color: #000000;">
-          <h5 class="mb-0 text-white">➕ Transaction Details</h5>
-        </div>
+      <!-- collapsible body -->
+      <div id="aiHelpSection" class="collapse">
         <div class="card-body">
-          <form method="POST" action="/transactions/add_transactions" class="needs-validation" novalidate>
 
-            <!-- Transaction Header -->
-            <div class="row g-4 mb-4">
-              <div class="col-md-4">
-                <label for="date" class="form-label text-light">📅 Date</label>
-                <input type="date" id="date" name="date" class="form-control rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" required>
-              </div>
-              <div class="col-md-4">
-                <label for="description" class="form-label text-light">🧾 Description</label>
-                <input type="text" id="description" name="description" class="form-control rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" placeholder="E.g. Purchase of supplies">
-              </div>
-              <div class="col-md-4">
-                <label for="reference_number" class="form-label text-light">🔖 Reference #</label>
-                <input type="text" id="reference_number" name="reference_number" class="form-control rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" placeholder="E.g. INV-1021">
-              </div>
+          <!-- prompt form -->
+          <form id="aiForm" method="POST" action="/transactions/add_transactions/ai_help" class="row g-3">
+            <div class="col-12">
+              <label for="transactionInput" class="form-label text-success">Enter a transaction description</label>
+              <input type="text" name="transaction_input" id="transactionInput"
+                     class="form-control"
+                     placeholder="e.g. POS withdrawal at Equity Bank" required>
             </div>
-
-            <!-- Transaction Lines -->
-            <h5 class="fw-semibold text-light mb-3">📌 Transaction Lines</h5>
-            <div class="table-responsive">
-  <div id="transaction-table" style="background-color: #232323; border: 1px solid #343a40; border-radius: 0.5rem;">
-    <!-- Table Header -->
-    <div class="row g-3 p-3" style="border-bottom: 1px solid #343a40;">
-      <div class="col-md-3">
-        <label class="form-label text-light fw-bold">📂 Account</label>
-      </div>
-      <div class="col-md-2">
-        <label class="form-label text-light fw-bold">💸 Amount</label>
-      </div>
-      <div class="col-md-3">
-        <label class="form-label text-light fw-bold">↔️ Debit/Credit</label>
-      </div>
-    </div>
-    
-    <!-- Transaction Lines Container -->
-    <div id="transaction-lines">
-      <!-- First Line -->
-      <div class="row g-3 p-3 align-items-end transaction-line">
-        <div class="col-md-3">
-          <select name="account_id[]" class="form-select rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" required>
-            <option value="">Select Account</option>
-            {% for acc in accounts %}
-            <option value="{{ acc.id }}">{{ acc.name }} ({{ acc.type }})</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="col-md-2">
-          <input type="number" name="amount[]" step="0.01" class="form-control rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" placeholder="0.00" required>
-        </div>
-
-        <div class="col-md-3">
-          <select name="d_c[]" class="form-select rounded-3" style="background-color: #232323; border-color: #343a40; color: #fff;" required>
-            <option value="">Select</option>
-            <option value="debit">Debit</option>
-            <option value="credit">Credit</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Add / Remove Buttons -->
-<div class="d-flex gap-3 my-3">
-  <button type="button" id="add-line" class="btn btn-outline-success rounded-pill px-4">
-    ➕ Add Line
-  </button>
-  <button type="button" id="remove-line" class="btn btn-outline-danger rounded-pill px-4">
-    ➖ Remove Last Line
-  </button>
-</div>
-            <!-- Submit Button -->
-            <div class="d-grid">
-              <button type="submit" class="btn btn-success rounded-pill py-2 fw-bold">
-                💾 Save Transaction
-              </button>
+            <div class="col-auto">
+              <button type="submit" class="btn btn-success px-4">Get AI suggestion</button>
             </div>
-
           </form>
+
+          <!-- AI response box -->
+          <div id="aiResponse"
+               class="glass-effect border-success mt-4 p-4 rounded-4 d-none">
+
+            <div class="d-flex align-items-center mb-3">
+              <i class="bi bi-stars text-warning fs-4 me-3 glow-icon"></i>
+              <h5 class="mb-0 text-success">AI suggestion</h5>
+            </div>
+
+            <p id="aiOutput" class="mb-0 ps-3 fw-medium"></p>
+          </div>
         </div>
       </div>
-
     </div>
   </div>
-</main>
+
+  <!-- ADD‑TRANSACTION CARD ---------------------------------- -->
+  <div class="container-lg">
+    <div class="card glass-effect border-0 shadow-lg">
+
+      <div class="card-body p-4">
+
+        <!-- page title -->
+        <h2 class="text-center fw-bold mb-4"> Add transaction</h2>
+
+        <!-- form wrapper -->
+        <form method="POST" action="/transactions/add_transactions"
+              class="needs-validation" novalidate>
+
+          <!-- transaction meta -->
+          <div class="row g-4 mb-4">
+            <div class="col-md-4">
+              <label class="form-label"> Date</label>
+              <input type="date" name="date" class="form-control" required>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label"> Description</label>
+              <input type="text" name="description" class="form-control"
+                     placeholder="E.g. Purchase of supplies">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label"> Reference #</label>
+              <input type="text" name="reference_number" class="form-control"
+                     placeholder="E.g. INV‑1021">
+            </div>
+          </div>
+
+          <!-- table header -->
+          <h5 class="fw-semibold mb-3"> Transaction lines</h5>
+          <div class="table-responsive">
+            <div id="transaction-table"
+                 class="rounded-3 border p-3"
+                 style="background:#252528;">
+              <div class="row g-3 mb-3 border-bottom pb-2">
+                <div class="col-md-3 fw-bold">📂 Account</div>
+                <div class="col-md-2 fw-bold">💸 Amount</div>
+                <div class="col-md-3 fw-bold">↔️ Debit/Credit</div>
+              </div>
+
+              <!-- first line -->
+              <div id="transaction-lines">
+                <div class="row g-3 transaction-line mb-3">
+                  <div class="col-md-3">
+                    <select name="account_id[]" class="form-select" required>
+                      <option value="">Select account</option>
+                      {% for acc in accounts %}
+                        <option value="{{ acc.id }}">{{ acc.name }} ({{ acc.type }})</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+
+                  <div class="col-md-2">
+                    <input type="number" name="amount[]" step="0.01" class="form-control"
+                           placeholder="0.00" required>
+                  </div>
+
+                  <div class="col-md-3">
+                    <select name="d_c[]" class="form-select" required>
+                      <option value="">Select</option>
+                      <option value="debit">Debit</option>
+                      <option value="credit">Credit</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- add / remove line buttons -->
+          <div class="d-flex gap-3 my-3">
+            <button type="button" id="add-line"
+                    class="btn btn-outline-success rounded-pill px-4">➕ Add line</button>
+            <button type="button" id="remove-line"
+                    class="btn btn-outline-danger rounded-pill px-4">➖ Remove last line</button>
+          </div>
+
+          <!-- submit -->
+          <div class="d-grid">
+            <button type="submit"
+                    class="btn btn-success rounded-pill py-2 fw-bold">
+              💾 Save transaction
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
 
 <script>
   document.getElementById("aiForm").addEventListener("submit", async function (e) {

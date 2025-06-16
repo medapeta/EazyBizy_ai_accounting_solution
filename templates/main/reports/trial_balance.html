@@ -2,41 +2,44 @@
 
 {% block content %}
 <main class="container py-5" style="flex: 1;">
-  <div class="card border-0 rounded-4 shadow" style="background-color: #1e1e1e;">
+  <div class="card border-0 rounded-4 shadow bg-dark text-light">
     <div class="card-body p-4">
       
-      <h2 class="text-center text-light fw-bold mb-4">🧾 Trial Balance Summary</h2>
+      <!-- Header -->
+      <h2 class="text-center fw-bold text-light mb-4"> Trial Balance Summary</h2>
 
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="text-secondary mb-0">🧮 Account Balances</h5>
-        <span class="badge bg-dark text-light shadow-sm px-3 py-2 fs-6 rounded-pill">
+        <h5 class="text-secondary fw-semibold"> Account Balances</h5>
+        <span class="badge bg-secondary bg-opacity-25 text-light px-3 py-2 fs-6 rounded-pill shadow-sm">
           As of: {{ current_date.strftime('%Y-%m-%d') if current_date else 'Current' }}
         </span>
       </div>
 
+      <!-- Table -->
       <div class="table-responsive">
-        <table class="table table-dark table-hover align-middle rounded-3 overflow-hidden">
-          <thead class="text-secondary">
+        <table class="table table-dark table-hover align-middle rounded overflow-hidden shadow-sm">
+          <thead class="text-light text-center bg-black bg-opacity-50">
             <tr>
-              <th>📋 Account Name</th>
+              <th class="text-start">📋 Account Name</th>
               <th>📘 Type</th>
               <th>📌 Code</th>
               <th class="text-end text-success">⬆️ Debit</th>
               <th class="text-end text-danger">⬇️ Credit</th>
             </tr>
           </thead>
-      <tbody>
-          {% for type, accounts in grouped_accounts.items() %}
-            <tr class="bg-dark">
-              <td colspan="5" class="fw-bold text-info">
-                {{ type|upper }} ACCOUNTS
-              </td>
-            </tr>
 
-            {% for account in accounts %}
+          <tbody>
+            {% for type, accounts in grouped_accounts.items() %}
+              <tr class="table-group-divider">
+                <td colspan="5" class="fw-bold text-info bg-dark bg-opacity-50 text-uppercase">
+                  {{ type }} Accounts
+                </td>
+              </tr>
+
+              {% for account in accounts %}
               <tr class="{{ 'opacity-75' if account.account_total == 0 }} 
                           {{ 'border-top border-info' if 'capital' in account.account_x.name.lower() }}">
-                <td>{{ account.account_x.name }}</td>
+                <td class="text-start">{{ account.account_x.name }}</td>
                 <td>{{ account.account_x.type }}</td>
                 <td>{{ account.account_x.code }}</td>
                 <td class="text-end text-success">
@@ -50,37 +53,37 @@
                   {% else %}—{% endif %}
                 </td>
               </tr>
+              {% endfor %}
             {% endfor %}
-          {% endfor %}
-        </tbody>
-        <tfoot class="table-dark">
-          <tr>
-            <td colspan="3" class="text-end"> Total Debits:</td>
-            <td class="text-end text-success">{{ "{:,.2f}".format(total_dc['debits']) }}</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td colspan="3" class="text-end"> Total Credits:</td>
-            <td></td>
-            <td class="text-end text-danger">{{ "{:,.2f}".format(total_dc['credits']) }}</td>
-          </tr>
-        </tfoot>
+          </tbody>
 
+          <!-- Totals -->
+          <tfoot class="bg-black bg-opacity-25 text-light fw-semibold">
+            <tr>
+              <td colspan="3" class="text-end">Total Debits:</td>
+              <td class="text-end text-success">{{ "{:,.2f}".format(total_dc['debits']) }}</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td colspan="3" class="text-end">Total Credits:</td>
+              <td></td>
+              <td class="text-end text-danger">{{ "{:,.2f}".format(total_dc['credits']) }}</td>
+            </tr>
+          </tfoot>
         </table>
       </div>
 
-      <!-- Balance Status Indicator -->
-      <div class="mt-4 p-3 rounded-3 {{ 'bg-success bg-opacity-75' if total_dc.balanced else 'bg-danger bg-opacity-25' }}">
-        <div class="d-flex justify-content-center align-items-center">
-          <i class="bi bi-{{ 'check-circle-fill' if total_dc.balanced else 'exclamation-triangle-fill' }} me-2"></i>
-          <span>
-            {% if total_dc.balanced %}
-              Trial Balance is Correct (Debits = Credits)
-            {% else %}
-              Trial Balance is Unbalanced (Difference: {{ "{:,.2f}".format(total_dc.debits - total_dc.credits) }})
-            {% endif %}
-          </span>
-        </div>
+      <!-- Balance Status -->
+      <div class="mt-4 p-3 rounded-3 d-flex justify-content-center align-items-center 
+                  {{ 'bg-success bg-opacity-50 text-white' if total_dc.balanced else 'bg-danger bg-opacity-25 text-light' }}">
+        <i class="bi bi-{{ 'check-circle-fill' if total_dc.balanced else 'exclamation-triangle-fill' }} me-2 fs-5"></i>
+        <span>
+          {% if total_dc.balanced %}
+            ✅ Trial Balance is Correct (Debits = Credits)
+          {% else %}
+            ⚠️ Trial Balance is Unbalanced (Difference: {{ "{:,.2f}".format(total_dc.debits - total_dc.credits) }})
+          {% endif %}
+        </span>
       </div>
 
     </div>
