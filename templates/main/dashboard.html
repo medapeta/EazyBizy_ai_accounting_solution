@@ -11,14 +11,16 @@
     </div>
     <div class="badge fs-6">{{ username[0].capitalize() + username[1:].lower() }}</div>
   </div>
-
+{% macro format_amount(value) %}
+  {{ value|int if value == value|int else "%.2f"|format(value) }}
+{% endmacro %}
   <!-- Quick Stats Row -->
   <div class="row quick-stats mb-4">
     <div class="col-md-3 mb-3">
       <div class="card border-primary">
         <div class="card-body">
           <h5 class="card-title text-primary">💰 Cash </h5>
-          <p class="card-text display-6">${{ cash_on_hand }}</p>
+          <p class="card-text display-6">${{ format_amount(cash_on_hand) }}</p>
         </div>
       </div>
     </div>
@@ -27,7 +29,7 @@
       <div class="card border-success">
         <div class="card-body">
           <h5 class="card-title text-success">📈 Income</h5>
-          <p class="card-text display-6">${{ income }}</p>
+          <p class="card-text display-6">${{ format_amount(income) }}</p>
           
         </div>
       </div>
@@ -37,7 +39,7 @@
       <div class="card border-danger">
         <div class="card-body">
           <h5 class="card-title text-danger">📉 Expenses</h5>
-          <p class="card-text display-6">${{ expense }}</p>
+          <p class="card-text display-6">${{ format_amount(expense) }}</p>
           
         </div>
       </div>
@@ -47,7 +49,7 @@
       <div class="card border-warning">
         <div class="card-body">
           <h5 class="card-title text-warning">🏦 Net Worth</h5>
-          <p class="card-text display-6">${{ net_worth }}</p>
+          <p class="card-text display-6">${{ format_amount(net_worth) }}</p>
           
         </div>
       </div>
