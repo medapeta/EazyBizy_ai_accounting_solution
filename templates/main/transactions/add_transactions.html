@@ -46,7 +46,7 @@
               <h5 class="mb-0 text-success">AI suggestion</h5>
             </div>
 
-            <div class="ps-3 text-light-emphasis fw-medium" id="aiOutput" style="font-size: 1.05rem;color:white !important">
+            <div class="ps-3 text-light-emphasis fw-medium" id="aiOutput" style="font-size: 1.05rem;color:white !important;white-space: pre-line">
             {{ ai_response }}
           </div>
           </div>
@@ -168,7 +168,7 @@
         "Content-Type": "application/x-www-form-urlencoded"
       },
       body: new URLSearchParams({
-        transactionInput: input
+        transaction_input: input
       })
     });
 

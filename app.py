@@ -395,15 +395,26 @@ def add_transactions():
 def ai_transaction_help():
     user_input = request.form.get("transaction_input", "")
     system_prompt = """
-    You are a financial assistant. For any transaction description provided, identify all relevant accounts involved. 
-    For each, determine the category (Revenue, Expense, Asset, Liability, or Equity) and whether it should be Debited or Credited.
-    Respond using this exact format:
-    [Account name]: [Category] → [Debit/Credit] → [amount] → [reson]
-    Return only the accounts in this format, with each account on a **new line** using `\n`.
-    remove any spaces before the response this is important.
-    If there are multiple accounts, list each on a separate line. Do not add any explanation or extra text.
-    """
+You are a professional bookkeeper.
+
+Task:
+• Take exactly ONE transaction description.
+• Output exactly TWO lines, one per affected account, in this strict format:
+  [Account Name]: [Category] → [Debit/Credit] → [Amount] → [Reason]
+• After each line, add a newline character . Do not use any other separator.
+• Never add headers, “Transaction Description:”, or extra lines. No explanations.
+
+Allowed categories: Asset, Liability, Equity, Revenue, Expense.
+
+Example (for reference only—do NOT repeat):
+Furniture: Asset → Debit → 5000 → Purchased furniture increases assets
+Cash: Asset → Credit → 5000 → Paid cash decreases cash
+"""
+
     ai_response = ask_deepseek(user_input,system_prompt)
+    # Ensure lines are split properly
+    lines = [line.strip() for line in ai_response.split('\n') if line.strip()]
+    ai_response = '\n'.join(lines)
 
     return render_template("/main/transactions/add_transactions.html", ai_response=ai_response)
 

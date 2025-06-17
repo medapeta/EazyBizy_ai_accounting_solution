@@ -259,7 +259,6 @@ def ask_deepseek(user_message,system_c):
             response.raise_for_status()  # Raise error for non-2xx codes
 
             json_data = response.json()
-            print(json_data) 
             return json_data["choices"][0]["message"]["content"]
 
     except Exception as e:
