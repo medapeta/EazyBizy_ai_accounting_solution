@@ -81,16 +81,25 @@
 
 <section class="hero hero-base">
   <div class="container hero-content text-center">
-    <h1 class="fade-in display-4 fw-bold">Financial Control at Your Fingertips</h1>
+    <h1 class="fade-in display-4 fw-bold">Bookeeping at Your Fingertips</h1>
 <p class="fade-in delay-1 lead text-pale-green">
-  AI that categorizes, summarizes, and simplifies your money flow.
+  AI that categorizes, summarizes, and simplifies your accounting bussiness flow.
 </p>
     <div class="buttons fade-in delay-2 d-flex justify-content-center gap-3 mt-4">
       <a href="/register" class="btn btn-primary btn-lg px-4">Get Started</a>
       <a href="/login" class="btn btn-outline-secondary btn-lg px-4">Log In</a>
     </div>
   </div>
+
+  <div class="buttons fade-in delay-2 d-flex justify-content-center gap-3 mt-4">
+      <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+      <dotlottie-player src="https://lottie.host/b2864b32-80e3-4768-a5aa-d8c5aec0cf8c/4Ldktkp5bN.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
+    </div>
 </section>
+
+<section class="container my-5 py-5"></section>
+</section>
+
 
 <section class="container my-5 py-5">
   <h2 class="text-center mb-5 text-green">🚀 Key Features</h2>
@@ -168,23 +177,41 @@
 <section class="container my-5 py-5 text-center position-relative">
   <div class="glow-accent"></div>
   <h2 class="text-green">📈 Powerful Reports & Visuals</h2>
+
   <div class="d-flex flex-wrap justify-content-center gap-4 my-4">
-    <div class="card card-custom chart-card" style="width: 18rem;">
-      <img src="{{ url_for('static', filename='images/covers/3d_pie_chart.jpg') }}" class="card-img-top" alt="Spending Categories Pie Chart">
-      <div class="card-body">
-        <p class="card-text text-pale-green">Spending Categories</p>
+    
+    <!-- Card 1 -->
+    <div class="card card-custom chart-card p-4" style="width: 280px; height: 280px;">
+      <div class="card-body d-flex justify-content-center align-items-center">
+        <dotlottie-player 
+          src="https://lottie.host/22178e61-d347-46da-86c9-002e7be40c30/WwySNvL9Pc.lottie" 
+          background="transparent" 
+          speed="1" 
+          style="width: 180px; height: 180px;" 
+          loop autoplay>
+        </dotlottie-player> 
       </div>
     </div>
-    <div class="card card-custom chart-card" style="width: 18rem;">
-      <img src="{{ url_for('static', filename='images/covers/flat-lay-statistics-presentation-with-chart.jpg') }}" class="card-img-top" alt="Income vs Expenses Over Time">
-      <div class="card-body">
-        <p class="card-text text-pale-green">Income vs Expenses</p>
+
+    <!-- Card 2 -->
+    <div class="card card-custom chart-card p-4" style="width: 280px; height: 280px;">
+      <div class="card-body d-flex justify-content-center align-items-center">
+        <dotlottie-player 
+          src="https://lottie.host/28c9b726-53ea-4fbe-afd4-84fe22fcd1a8/yq2mYbCCuG.lottie" 
+          background="transparent" 
+          speed="1" 
+          style="width: 180px; height: 180px;" 
+          loop autoplay>
+        </dotlottie-player>
       </div>
     </div>
+
   </div>
+
   <p class="text-pale-green mt-3">
     Instantly visualize your financial health with interactive charts and smart summaries.
   </p>
 </section>
+
 
 {% endblock %}
