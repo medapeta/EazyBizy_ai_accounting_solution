@@ -42,7 +42,7 @@
 Here's a quick video I made to walk you through the project and its features.
 ### **Date recorded:** 
 
-[Link to Video Demo](https://youtu.be/YOUR_VIDEO_LINK_HERE)
+[Link to Video Demo](https://youtu.be/eFvx-XU21JI)
 
 ## Introduction
 Hello! For my CS50 final project, I decided to build EazyBizy. I wanted to create a simple bookkeeping web app for freelancers and small business owners, especially those who, like me, might find traditional accounting software a bit intimidating.
