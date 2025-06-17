@@ -2,7 +2,7 @@
 
 ### **Project for:** CS50's Final Project 
 
-### **Edx username:** Medhanie Petros
+### **Edx username:** MP_2411_GBBD
 
 ### **Github username:** medapeta
 
