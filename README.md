@@ -1,12 +1,12 @@
 #  **EazyBizy** - Simple Bookkeeping Solution integrated with AI Powered analysis
 
-## **Author:** Medhanie Petros
+### **Project for:** CS50's Final Project 
 
-## **Project for:** CS50's Final Project 
+### **Edx username:** Medhanie Petros
 
-## **Edx username:** Medhanie Petros
+### **Github username:** medapeta
 
-## **Github username:** medapeta
+### **City & Country:** Kampala, Uganda 
 
 ![Logo](static/images/Home_page.png) 
 
