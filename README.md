@@ -1,8 +1,12 @@
-#  EazyBizy - AI Powered Simple Bookkeeping Solution
+#  **EazyBizy** - Simple Bookkeeping Solution integrated with AI Powered analysis
 
-## **Author:** Medhanie Petros (Ola cs50)
+## **Author:** Medhanie Petros
 
 ## **Project for:** CS50's Final Project 
+
+## **Edx username:** Medhanie Petros
+
+## **Github username:** medapeta
 
 ![Logo](static/images/Home_page.png) 
 
@@ -36,6 +40,7 @@
 ## Video Demo
 
 Here's a quick video I made to walk you through the project and its features.
+### **Date recorded:** 
 
 [Link to Video Demo](https://youtu.be/YOUR_VIDEO_LINK_HERE)
 
