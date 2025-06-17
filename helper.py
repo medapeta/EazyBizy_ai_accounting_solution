@@ -231,7 +231,7 @@ def show_cash_chart():
 
 def ask_deepseek(user_message,system_c):
     
-    api_key = os.getenv("OPENROUTER_API_KEY")
+    api_key = os.getenv("DEEPSEEK_API_KEY")
     
     if not api_key:
         raise ValueError("DeepSeek API key not found in environment variables")
