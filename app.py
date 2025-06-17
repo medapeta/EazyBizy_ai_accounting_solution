@@ -404,28 +404,26 @@ def add_transactions():
 def ai_transaction_help():
     user_input = request.form.get("transaction_input", "")
     system_prompt = """
-                    You are an intelligent bookkeeping assistant for small businesses.
+You are a professional bookkeeper.
 
-                    For any transaction given, identify all accounts involved, and return their:
-                    - Name
-                    - Type (Asset, Liability, Equity, Revenue, or Expense)
-                    - Whether it's Debited or Credited
-                    - Amount (if mentioned)
-                    - Reason for the entry
+Task:
+• Take exactly ONE transaction description.
+• Output exactly TWO lines, one per affected account, in this strict format:
+  [Account Name]: [Category] → [Debit/Credit] → [Amount] → [Reason]
+• After each line, add a newline character . Do not use any other separator.
+• Never add headers, “Transaction Description:”, or extra lines. No explanations.
 
-                    Format:
-                    [Account Name]: [Category] → [Debit/Credit] → [Amount] → [Reason]
+Allowed categories: Asset, Liability, Equity, Revenue, Expense.
 
-                    Do not include any extra commentary. Use `\n` to separate each line.
-                    Never repeat the original input or describe the process.
-
-                    Example:
-                    "Paid electricity bill 150"
-                    →
-                    Electricity Expense: Expense → Debit → 150 → Electricity usage is an expense  
-                    Cash: Asset → Credit → 150 → Cash decreases when bill is paid
+Example (for reference only—do NOT repeat):
+Furniture: Asset → Debit → 5000 → Purchased furniture increases assets
+Cash: Asset → Credit → 5000 → Paid cash decreases cash
 """
+
     ai_response = ask_deepseek(user_input,system_prompt)
+    # Ensure lines are split properly
+    lines = [line.strip() for line in ai_response.split('\n') if line.strip()]
+    ai_response = '\n'.join(lines)
 
     return render_template("/main/transactions/add_transactions.html", ai_response=ai_response)
 
